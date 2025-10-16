@@ -7,12 +7,6 @@ const app: Application = express();
 
 app.use(morgan("dev"));
 
-app.get("/ping", async (_req: Request, res: Response) => {
-  res.json({
-    message: "Pong!",
-  });
-});
-
 app.listen(PORT, () => {
   console.log("Server is running on port", PORT);
 });

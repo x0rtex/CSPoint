@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const connectionString: string = process.env.DB_CONN_STRING || "";
-const dbName: string = process.env.DB_NAME || "web2-2025";
+const dbName: string = process.env.DB_NAME || "cspoint";
 const client = new MongoClient(connectionString);
 
 export const collections: { users?: Collection } = {};

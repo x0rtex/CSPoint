@@ -1,0 +1,61 @@
+<h2 class="text-2xl font-bold">Team List</h2>
+@if (teams$ | async; as teams) { @if (isAuthenticated$ | async) {
+<button matButton="outlined" (click)="addTeam()">
+  <mat-icon>add</mat-icon>
+  Add Team
+</button>
+} @if (teams.length > 0) {
+<div class="overflow-x-auto my-4">
+  <table mat-table [dataSource]="teams">
+    <ng-container matColumnDef="logo">
+      <th mat-header-cell *matHeaderCellDef>Logo</th>
+      <td mat-cell *matCellDef="let team">
+        <img src="{{ team.logoUrl }}" alt="" class="team-logo" />
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef>Name</th>
+      <td mat-cell *matCellDef="let team">
+        <span class="name">{{ team.name }}</span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="country">
+      <th mat-header-cell *matHeaderCellDef>Country</th>
+      <td mat-cell *matCellDef="let team">{{ team.country }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="ranking">
+      <th mat-header-cell *matHeaderCellDef>Ranking</th>
+      <td mat-cell *matCellDef="let team"># {{ team.ranking }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="action">
+      <th mat-header-cell *matHeaderCellDef>Action</th>
+      <td mat-cell *matCellDef="let team">
+        <!-- Team Detail -->
+        <button matButton="outlined" [routerLink]="['/teams', team._id]">
+          <mat-icon>visibility</mat-icon>
+          View Details
+        </button>
+
+        <!-- Set Favorite Team -->
+        @if (isAuthenticated$ | async) {
+        <button matButton="outlined" (click)="setFavouriteTeam(team._id!)">
+          <mat-icon>favorite</mat-icon>
+          Set Favourite
+        </button>
+        }
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="team-row"></tr>
+  </table>
+</div>
+} @else {
+<p>No teams found.</p>
+} } @else {
+<mat-spinner></mat-spinner>
+}

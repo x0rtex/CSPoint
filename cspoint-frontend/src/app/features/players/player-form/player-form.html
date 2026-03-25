@@ -1,0 +1,126 @@
+<mat-card class="form-card" appearance="outlined">
+  <mat-card-header>
+    <mat-card-title>Edit Player</mat-card-title>
+  </mat-card-header>
+
+  <!-- Edit Player Form -->
+  <form [formGroup]="playerForm" (ngSubmit)="onSubmit()" class="player-form">
+    <mat-card-content>
+        <!-- Name -->
+        <mat-form-field>
+          <mat-label>Name</mat-label>
+          <input id="name" type="text" formControlName="name" matInput />
+          <mat-icon matPrefix>person</mat-icon>
+
+          <!-- Validation -->
+          @if (!name?.value) {
+          <mat-hint>Must be at least 3 characters</mat-hint>
+          } @if (name?.hasError('required')) {
+          <mat-error>Name is required</mat-error>
+          } @else if (name?.hasError('minLength')) {
+          <mat-error>Name must be at least 3 characters</mat-error>
+          }
+        </mat-form-field>
+
+        <!-- Nickname -->
+        <mat-form-field>
+          <mat-label>Nickname</mat-label>
+          <input id="nickname" type="text" formControlName="nickname" matInput />
+          <mat-icon matPrefix>sports_esports</mat-icon>
+
+          <!-- Validation -->
+          @if (!nickname?.value) {
+          <mat-hint>Must be at least 2 characters</mat-hint>
+          } @if (nickname?.hasError('required')) {
+          <mat-error>Nickname is required</mat-error>
+          } @else if (nickname?.hasError('minLength')) {
+          <mat-error>Nickname must be at least 2 characters</mat-error>
+          }
+        </mat-form-field>
+
+        <!-- Country -->
+        <mat-form-field>
+          <mat-label>Country</mat-label>
+          <input id="country" type="text" formControlName="country" matInput />
+          <mat-icon matPrefix>flag</mat-icon>
+
+          <!-- Validation -->
+          @if (!country?.value) {
+            <mat-hint>Must be at least 3 characters</mat-hint>
+          } @if (country?.hasError('required')) {
+            <mat-error>Country is required</mat-error>
+          } @else if (country?.hasError('minLength')) {
+            <mat-error>Country must be at least 3 characters</mat-error>
+          }
+        </mat-form-field>
+
+        <!-- Photo URL -->
+        <mat-form-field>
+          <mat-label>Photo URL</mat-label>
+          <input id="photoUrl" type="text" formControlName="photoUrl" matInput />
+          <mat-icon matPrefix>photo_camera</mat-icon>
+
+          <!-- Validation -->
+          @if (photoUrl?.hasError('minLength')) {
+            <mat-error>Photo URL must be at least 10 characters</mat-error>
+          }
+        </mat-form-field>
+
+        <!-- Rating -->
+        <mat-form-field>
+          <mat-label>Rating</mat-label>
+          <input id="rating" type="number" formControlName="rating" matInput />
+          <mat-icon matPrefix>star</mat-icon>
+
+          <!-- Validation -->
+          @if (!rating?.value) {
+            <mat-hint>Enter a valid rating</mat-hint>
+          } @if (rating?.hasError('required')) {
+            <mat-error>Rating is required</mat-error>
+          } @else if (rating?.hasError('min')) {
+            <mat-error>Rating must be at least 0.0</mat-error>
+          } @else if (rating?.hasError('max')) {
+            <mat-error>Rating must be at most 3.0</mat-error>
+          } @else if (rating?.hasError('pattern')) {
+            <mat-error>Rating must be a number</mat-error>
+          }
+        </mat-form-field>
+
+        <!-- Team ID -->
+        <mat-form-field>
+          <mat-label>Team ID</mat-label>
+          <input id="teamId" type="text" formControlName="teamId" matInput />
+          <mat-icon matPrefix>group</mat-icon>
+        </mat-form-field>
+    </mat-card-content>
+    <mat-card-actions>
+      <!-- Submit -->
+      <button matButton="outlined" type="submit" [disabled]="playerForm.invalid">
+        <mat-icon>{{ player() ? 'save' : 'add' }}</mat-icon>
+        {{ player() ? 'Update Player' : 'Create Player' }}
+      </button>
+
+      <!-- Cancel -->
+      <button matButton="outlined" type="button" (click)="onCancel()">
+        <mat-icon>close</mat-icon>
+        Cancel
+      </button>
+    </mat-card-actions>
+  </form>
+</mat-card>
+
+<!-- Preview -->
+<h2 class="text-xl font-semibold">Preview</h2>
+<mat-card class="player-card" appearance="outlined">
+  <mat-card-header>
+    <mat-card-title>{{playerForm.get('nickname')?.value}}</mat-card-title>
+    <mat-card-subtitle>{{playerForm.get('name')?.value}}</mat-card-subtitle>
+  </mat-card-header>
+  <img mat-card-image [src]="playerForm.get('photoUrl')?.value" [alt]=""/>
+  <mat-card-content>
+    <p><strong>Country:</strong> {{playerForm.get('country')?.value}}</p>
+    <p><strong>Rating:</strong> {{playerForm.get('rating')?.value}}</p>
+    <p><strong>Team ID:</strong> {{playerForm.get('teamId')?.value}}</p>
+    <p><strong>Last Updated:</strong> {{ currentDate | date }}</p>
+  </mat-card-content>
+</mat-card>

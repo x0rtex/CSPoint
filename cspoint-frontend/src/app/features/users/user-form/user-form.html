@@ -1,0 +1,77 @@
+<mat-card class="form-card" appearance="outlined">
+  <mat-card-header>
+    <mat-card-title>User Form</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <mat-card-subtitle>Personal Information</mat-card-subtitle>
+    <form [formGroup]="userForm" (ngSubmit)="onSubmit()" class="user-form">
+      <!-- Username -->
+      <mat-form-field appearance="fill">
+        <mat-label>Username</mat-label>
+        <input id="username" type="text" formControlName="username" matInput />
+
+        @if (!username?.value){
+        <mat-hint>Must be at least 3 characters</mat-hint>
+        } @if (username?.hasError('required') ){
+        <mat-error>Username is required</mat-error>
+        } @else if (username?.hasError('minLength')) {
+        <mat-error>Username must be at least 3 characters</mat-error>
+        }
+      </mat-form-field>
+
+      <!-- Email Address -->
+      <mat-form-field appearance="fill">
+        <mat-label>Email Address</mat-label>
+        <input type="email" formControlName="email" id="email" matInput />
+
+        @if (!email?.value){
+        <mat-hint>Must be a valid email address</mat-hint>
+        } @if (email?.hasError('required') ){
+        <mat-error>Email is required</mat-error>
+        } @else if (email?.hasError('email')) {
+        <mat-error>Invalid email address</mat-error>
+        }
+      </mat-form-field>
+
+      <!-- Password -->
+      <mat-form-field appearance="fill">
+        <mat-label>Password</mat-label>
+        <input type="password" formControlName="password" id="password" matInput />
+
+        @if (!password?.value){
+        <mat-hint>Must be at least 8 characters</mat-hint>
+        } @if (password?.hasError('required') ){
+        <mat-error>Password is required</mat-error>
+        } @else if (password?.hasError('minLength')) {
+        <mat-error>Password must be at least 8 characters</mat-error>
+        }
+      </mat-form-field>
+
+      <!-- Roles -->
+      @if(roles.length > 0 || user()){
+      <mat-card-subtitle>Roles</mat-card-subtitle>
+      } @for(role of roles.controls; track i; let i = $index) {
+      <div formArrayName="roles" class="role">
+        <mat-form-field appearance="fill">
+          <mat-label>Role {{i+1}}</mat-label>
+          <input
+            [formControlName]="i"
+            placeholder="e.g., user, admin, editor"
+            id="role-{{i}}"
+            matInput
+          />
+        </mat-form-field>
+        <button mat-button type="button" (click)="removeRole(i)">Remove Role</button>
+      </div>
+      }
+
+      <!-- Submit -->
+      <mat-card-actions>
+        <button matButton type="submit" [disabled]="userForm.invalid">Submit</button>
+      </mat-card-actions>
+
+      <!-- Add Role -->
+      <button matButton type="button" (click)="addRole()">Add Role</button>
+    </form>
+  </mat-card-content>
+</mat-card>

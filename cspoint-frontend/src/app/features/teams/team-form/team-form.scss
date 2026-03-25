@@ -1,0 +1,56 @@
+.form-card {
+  width: 100%;
+  max-width: 600px;
+
+  mat-card-header {
+    mat-card-title {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+  }
+
+  mat-card-content {
+    display: flex;
+    flex-direction: column;
+  }
+
+  mat-card-actions {
+    gap: 8px;
+    padding: 16px;
+    border-top: 1px solid gray;
+  }
+}
+
+.team-card {
+  max-width: 600px;
+
+  mat-card-header {
+    mat-card-title {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+  }
+
+  mat-card-content {
+    p {
+      margin: 1em 0;
+    }
+  }
+
+  mat-card-actions {
+    gap: 8px;
+    padding: 16px;
+    border-top: 1px solid gray;
+  }
+}
+
+.playerId {
+  display: flex;
+  align-items: flex-start;
+
+  .mat-mdc-form-field {
+    margin-right: 10px;
+  }
+}

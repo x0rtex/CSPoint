@@ -1,0 +1,14 @@
+{
+  "name": "cspoint",
+  "private": true,
+  "workspaces": [
+    "cspoint-frontend",
+    "cspoint-api"
+  ],
+  "scripts": {
+    "dev:frontend": "npm run start -w cspoint-frontend",
+    "dev:api": "npm run dev -w cspoint-api",
+    "build": "npm run build -w cspoint-frontend && npm run build -w cspoint-api",
+    "test": "npm run test -w cspoint-frontend && npm run test -w cspoint-api"
+  }
+}

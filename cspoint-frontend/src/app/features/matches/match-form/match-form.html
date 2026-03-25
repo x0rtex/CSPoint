@@ -1,0 +1,131 @@
+<mat-card class="form-card" appearance="outlined">
+  <mat-card-header>
+    <mat-card-title>{{ match() ? 'Edit' : 'Create' }} Match</mat-card-title>
+  </mat-card-header>
+
+  <!-- Match Form -->
+  <form [formGroup]="matchForm" (ngSubmit)="onSubmit()" class="match-form">
+    <mat-card-content>
+      <!-- Team 1 ID -->
+      <mat-form-field>
+        <mat-label>Team 1 ID</mat-label>
+        <input id="team1Id" type="text" formControlName="team1Id" matInput />
+        <mat-icon matPrefix>group</mat-icon>
+
+        <!-- Validation -->
+        @if (!team1Id?.value) {
+        <mat-hint>Enter Team 1 ID</mat-hint>
+        } @if (team1Id?.hasError('required')) {
+        <mat-error>Team 1 ID is required</mat-error>
+        }
+      </mat-form-field>
+
+      <!-- Team 2 ID -->
+      <mat-form-field>
+        <mat-label>Team 2 ID</mat-label>
+        <input id="team2Id" type="text" formControlName="team2Id" matInput />
+        <mat-icon matPrefix>group</mat-icon>
+
+        <!-- Validation -->
+        @if (!team2Id?.value) {
+        <mat-hint>Enter Team 2 ID</mat-hint>
+        } @if (team2Id?.hasError('required')) {
+        <mat-error>Team 2 ID is required</mat-error>
+        }
+      </mat-form-field>
+
+      <!-- Team 1 Score -->
+      <mat-form-field>
+        <mat-label>Team 1 Score</mat-label>
+        <input id="team1Score" type="number" formControlName="team1Score" matInput />
+        <mat-icon matPrefix>sports_score</mat-icon>
+
+        <!-- Validation -->
+        @if (!team1Score?.value) {
+        <mat-hint>Enter match score (e.g. 12)</mat-hint>
+        } @if (team1Score?.hasError('required')) {
+        <mat-error>Score is required</mat-error>
+        }
+      </mat-form-field>
+
+      <!-- Team 2 Score -->
+      <mat-form-field>
+        <mat-label>Team 2 Score</mat-label>
+        <input id="team2Score" type="number" formControlName="team2Score" matInput />
+        <mat-icon matPrefix>sports_score</mat-icon>
+
+        <!-- Validation -->
+        @if (!team2Score?.value) {
+        <mat-hint>Enter match score (e.g. 12)</mat-hint>
+        } @if (team2Score?.hasError('required')) {
+        <mat-error>Score is required</mat-error>
+        }
+      </mat-form-field>
+
+      <!-- Map -->
+      <mat-form-field>
+        <mat-label>Map</mat-label>
+        <input id="map" type="text" formControlName="map" matInput />
+        <mat-icon matPrefix>map</mat-icon>
+
+        <!-- Validation -->
+        @if (!map?.value) {
+        <mat-hint>Must be at least 2 characters</mat-hint>
+        } @if (map?.hasError('required')) {
+        <mat-error>Map is required</mat-error>
+        } @else if (map?.hasError('minLength')) {
+        <mat-error>Map must be at least 2 characters</mat-error>
+        }
+      </mat-form-field>
+
+      <!-- Date -->
+      <mat-form-field>
+        <mat-label>Date</mat-label>
+        <input id="date" type="datetime-local" formControlName="date" matInput />
+        <mat-icon matPrefix>calendar_today</mat-icon>
+
+        <!-- Validation -->
+        @if (!date?.value) {
+        <mat-hint>Enter match date</mat-hint>
+        } @if (date?.hasError('required')) {
+        <mat-error>Date is required</mat-error>
+        }
+      </mat-form-field>
+    </mat-card-content>
+    <mat-card-actions>
+      <!-- Submit -->
+      <button matButton="outlined" type="submit" [disabled]="matchForm.invalid">
+        <mat-icon>{{ match() ? 'save' : 'add' }}</mat-icon>
+        {{ match() ? 'Update Match' : 'Create Match' }}
+      </button>
+
+      <!-- Cancel -->
+      <button matButton="outlined" type="button" (click)="onCancel()">
+        <mat-icon>close</mat-icon>
+        Cancel
+      </button>
+    </mat-card-actions>
+  </form>
+</mat-card>
+
+<!-- Preview -->
+
+<h2 class="preview-title">Preview</h2>
+<mat-card class="match-card" appearance="outlined">
+  <mat-card-header>
+    <mat-card-title
+      >{{matchForm.get('team1Id')?.value}} vs {{matchForm.get('team2Id')?.value}}</mat-card-title
+    >
+    <mat-card-subtitle
+      >{{matchForm.get('date')?.value | date:'MMMM d, y \'at\' h:mm a'}}</mat-card-subtitle
+    >
+  </mat-card-header>
+  <mat-card-content>
+    <p>
+      <strong>Score:</strong> {{matchForm.get('team1Score')?.value}} -
+      {{matchForm.get('team2Score')?.value}}
+    </p>
+    <p><strong>Map:</strong> {{matchForm.get('map')?.value}}</p>
+    <p><strong>Last Updated:</strong> {{ currentDate | date }}</p>
+  </mat-card-content>
+</mat-card>

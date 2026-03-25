@@ -1,0 +1,123 @@
+<mat-card class="form-card" appearance="outlined">
+  <mat-card-header>
+    <mat-card-title>Edit Team</mat-card-title>
+  </mat-card-header>
+
+  <!-- Edit Team Form -->
+  <form [formGroup]="teamForm" (ngSubmit)="onSubmit()" class="team-form">
+    <mat-card-content>
+      <!-- Name -->
+      <mat-form-field>
+        <mat-label>Name</mat-label>
+        <input id="name" type="text" formControlName="name" matInput />
+        <mat-icon matPrefix>person</mat-icon>
+
+        <!-- Validation -->
+        @if (!name?.value) {
+        <mat-hint>Must be at least 2 characters</mat-hint>
+        } @if (name?.hasError('required')) {
+        <mat-error>Name is required</mat-error>
+        } @else if (name?.hasError('minLength')) {
+        <mat-error>Name must be at least 2 characters</mat-error>
+        }
+      </mat-form-field>
+
+      <!-- Country -->
+      <mat-form-field>
+        <mat-label>Country</mat-label>
+        <input id="country" type="text" formControlName="country" matInput />
+        <mat-icon matPrefix>flag</mat-icon>
+
+        <!-- Validation -->
+        @if (!country?.value) {
+        <mat-hint>Must be at least 3 characters</mat-hint>
+        } @if (country?.hasError('required')) {
+        <mat-error>Country is required</mat-error>
+        } @else if (country?.hasError('minLength')) {
+        <mat-error>Country must be at least 3 characters</mat-error>
+        }
+      </mat-form-field>
+
+      <!-- Logo URL -->
+      <mat-form-field>
+        <mat-label>Logo URL</mat-label>
+        <input id="logoUrl" type="text" formControlName="logoUrl" matInput />
+        <mat-icon matPrefix>photo_camera</mat-icon>
+
+        <!-- Validation -->
+        @if (logoUrl?.hasError('minLength')) {
+        <mat-error>Logo URL must be at least 10 characters</mat-error>
+        }
+      </mat-form-field>
+
+      <!-- Ranking -->
+      <mat-form-field>
+        <mat-label>Ranking</mat-label>
+        <input id="ranking" type="number" formControlName="ranking" matInput />
+        <mat-icon matPrefix>star</mat-icon>
+
+        <!-- Validation -->
+        @if (!ranking?.value) {
+        <mat-hint>Enter a valid ranking</mat-hint>
+        } @if (ranking?.hasError('required')) {
+        <mat-error>Ranking is required</mat-error>
+        } @else if (ranking?.hasError('min')) {
+        <mat-error>Ranking must be at least 1</mat-error>
+        } @else if (ranking?.hasError('pattern')) {
+        <mat-error>Ranking must be a number</mat-error>
+        }
+      </mat-form-field>
+
+      <!-- Player IDs -->
+      @if(playerIds.length > 0) {
+      <mat-card-subtitle>Player IDs</mat-card-subtitle>
+      } @for(playerIds of playerIds.controls; track i; let i = $index) {
+      <div formArrayName="playerIds" class="playerId">
+        <mat-form-field>
+          <mat-label>Player ID {{i+1}}:</mat-label>
+          <input [formControlName]="i" placeholder="Enter player ID" id="playerId-{{i}}" matInput />
+        </mat-form-field>
+        <button matButton="outlined" type="button" (click)="removePlayerId(i)">
+          Remove Player ID
+        </button>
+      </div>
+      }
+    </mat-card-content>
+    <mat-card-actions>
+      <!-- Submit -->
+      <button matButton="outlined" type="submit" [disabled]="teamForm.invalid">
+        <mat-icon>{{ team() ? 'save' : 'add' }}</mat-icon>
+        {{ team() ? 'Update Team' : 'Create Team' }}
+      </button>
+
+      <!-- Cancel -->
+      <button matButton="outlined" type="button" (click)="onCancel()">
+        <mat-icon>close</mat-icon>
+        Cancel
+      </button>
+
+      <button matButton="outlined" type="button" (click)="addPlayerId()">
+        <mat-icon>person</mat-icon>
+        Add Player
+      </button>
+    </mat-card-actions>
+  </form>
+</mat-card>
+
+<!-- Preview -->
+<h2 class="text-xl font-semibold">Preview</h2>
+<mat-card class="team-card" appearance="outlined">
+  <mat-card-header>
+    <div mat-card-avatar class="team-logo">
+      <img [src]="teamForm.get('logoUrl')?.value" [alt]="" />
+    </div>
+    <mat-card-title>{{teamForm.get('name')?.value}}</mat-card-title>
+    <mat-card-subtitle># {{teamForm.get('ranking')?.value}}</mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content>
+    <p><strong>Country:</strong> {{teamForm.get('country')?.value}}</p>
+    <p><strong>Players:</strong> {{ teamForm.get('playerIds')?.value?.join(', ') }}</p>
+    <p><strong>Last Updated:</strong> {{ currentDate | date }}</p>
+  </mat-card-content>
+</mat-card>

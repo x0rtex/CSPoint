@@ -1,0 +1,37 @@
+@if (currentUser$ | async; as user) {
+<!-- Edit Form -->
+<app-user-form [user]="user"></app-user-form>
+
+<!-- Favorites Display -->
+<mat-card class="form-card" appearance="outlined">
+  <mat-card-header>
+    <mat-card-title>Favorites</mat-card-title>
+  </mat-card-header>
+
+  <mat-card-content>
+    <!-- Favorite Team -->
+    <h3>
+      <mat-icon>groups</mat-icon>
+      Favorite Team
+    </h3>
+    @if (favouriteTeam$ | async; as team) {
+    <p><a [routerLink]="['/teams', team._id]">{{ team.name }}</a> ({{ team.country }})</p>
+    } @else {
+    <p>No favourite team set</p>
+    }
+
+    <!-- Favorite Player -->
+    <h3>
+      <mat-icon>person</mat-icon>
+      Favorite Player
+    </h3>
+    @if (favouritePlayer$ | async; as player) {
+    <p><a [routerLink]="['/players', player._id]">{{ player.nickname }}</a> ({{ player.name }})</p>
+    } @else {
+    <p>No favourite player set</p>
+    }
+  </mat-card-content>
+</mat-card>
+} @else {
+<mat-spinner></mat-spinner>
+}

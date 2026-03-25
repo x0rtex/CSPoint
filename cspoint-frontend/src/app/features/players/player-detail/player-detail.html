@@ -1,0 +1,48 @@
+@if (player$ | async; as player) {
+<mat-card class="player-card" appearance="outlined">
+  <mat-card-header>
+    <mat-card-title>{{ player.nickname }}</mat-card-title>
+    <mat-card-subtitle>{{ player.name }}</mat-card-subtitle>
+  </mat-card-header>
+  @if (player.photoUrl) {
+  <img mat-card-image [src]="player.photoUrl" [alt]="" />
+  }
+  <mat-card-content>
+    <p><strong>Country: </strong>{{ player.country }}</p>
+    <p><strong>Rating: </strong>{{ player.rating }}</p>
+    <p>
+      <strong>Team: </strong>
+      @if (team$ | async; as team) {
+      <a [routerLink]="['/teams', player.teamId]">{{ team.name }}</a>
+      } @else {
+      <span>No team</span>
+      }
+    </p>
+    <p><strong>Last Updated: </strong>{{ player.lastUpdated | date }}</p>
+  </mat-card-content>
+  <mat-card-actions>
+    <!-- Back To Players -->
+    <button matButton="outlined" [routerLink]="['/players']">
+      <mat-icon>arrow_back</mat-icon>
+      Back to Players
+    </button>
+
+    @if ((currentUser$ | async)?.roles?.includes('admin') || (currentUser$ |
+    async)?.roles?.includes('editor')) {
+    <!-- Edit Player -->
+    <button matButton="outlined" [routerLink]="['/players', player._id, 'edit']">
+      <mat-icon>edit</mat-icon>
+      Edit Player
+    </button>
+    } @if ((currentUser$ | async)?.roles?.includes('admin')) {
+    <!-- Delete Player -->
+    <button matButton="outlined" (click)="askDeletePlayer()">
+      <mat-icon>delete</mat-icon>
+      Delete Player
+    </button>
+    }
+  </mat-card-actions>
+</mat-card>
+} @else {
+<mat-spinner></mat-spinner>
+}

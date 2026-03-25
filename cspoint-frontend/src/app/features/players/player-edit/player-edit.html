@@ -1,0 +1,5 @@
+@if (player$ | async; as player) {
+  <app-player-form [player]="player"></app-player-form>
+} @else {
+  <mat-spinner></mat-spinner>
+}

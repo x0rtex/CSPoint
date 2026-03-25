@@ -1,0 +1,42 @@
+@if (match$ | async; as match) {
+<mat-card class="match-card" appearance="outlined">
+  <mat-card-header>
+    <mat-card-title>
+      <a [routerLink]="['/teams', match.team1Id]">{{ match.team1?.name }}</a>
+      vs
+      <a [routerLink]="['/teams', match.team2Id]">{{ match.team2?.name }}</a>
+    </mat-card-title>
+    <mat-card-subtitle>{{ match.date | date:'MMMM d, y \'at\' h:mm a' }}</mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content>
+    <p><strong>Score:</strong> {{ match.team1Score }} - {{ match.team2Score }}</p>
+    <p><strong>Map:</strong> {{ match.map }}</p>
+    <p><strong>Last Updated:</strong> {{ match.lastUpdated | date }}</p>
+  </mat-card-content>
+  <mat-card-actions>
+    <!-- Back To Matches -->
+    <button matButton="outlined" [routerLink]="['/matches']">
+      <mat-icon>arrow_back</mat-icon>
+      Back to Matches
+    </button>
+
+    @if ((currentUser$ | async)?.roles?.includes('admin') || (currentUser$ |
+    async)?.roles?.includes('editor')) {
+    <!-- Edit Match -->
+    <button matButton="outlined" [routerLink]="['/matches', match._id, 'edit']">
+      <mat-icon>edit</mat-icon>
+      Edit Match
+    </button>
+    } @if ((currentUser$ | async)?.roles?.includes('admin')) {
+    <!-- Delete Match -->
+    <button matButton="outlined" (click)="askDeleteMatch()">
+      <mat-icon>delete</mat-icon>
+      Delete Match
+    </button>
+    }
+  </mat-card-actions>
+</mat-card>
+} @else {
+<mat-spinner></mat-spinner>
+}

@@ -10,6 +10,8 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Observable } from 'rxjs';
 import { UsersService } from '../users/users.service';
 import { User } from '../users/user.interface';
+import { AdminStats, AdminStatsService } from './admin-stats.service';
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'app-admin',
@@ -29,18 +31,28 @@ import { User } from '../users/user.interface';
 })
 export class AdminComponent implements OnInit {
   private usersService = inject(UsersService);
+  private statsService = inject(AdminStatsService);
   private snackBar = inject(MatSnackBar);
 
   users$?: Observable<User[]>;
   displayedColumns: string[] = ['username', 'email', 'role', 'actions'];
   roleSelections: Record<string, string> = {};
+  stats$ = new BehaviorSubject<AdminStats | null>(null);
 
   ngOnInit(): void {
     this.loadUsers();
+    this.loadStats();
   }
 
   loadUsers(): void {
     this.users$ = this.usersService.getUsers();
+  }
+
+  loadStats(): void {
+    this.statsService.getStats().subscribe({
+      next: (stats) => this.stats$.next(stats),
+      error: () => this.stats$.next(null),
+    });
   }
 
   getSelectedRole(user: User): string {

@@ -9,6 +9,7 @@ import playerRoutes from "./routes/players";
 import teamRoutes from "./routes/teams";
 import matchRoutes from "./routes/matches";
 import newsRoutes from "./routes/news";
+import statsRoute from "./routes/stats";
 import { initDb } from "./database";
 
 dotenv.config();
@@ -30,6 +31,7 @@ app.use("/api/v1/players", playerRoutes);
 app.use("/api/v1/teams", teamRoutes);
 app.use("/api/v1/matches", matchRoutes);
 app.use("/api/v1/news", newsRoutes);
+app.use("/api/v1/stats", statsRoute)
 
 app.get("/health", async (_req: Request, res: Response) => {
   res.status(200).json({ status: "ok" });

@@ -1,4 +1,33 @@
-<h2 class="text-2xl font-bold">User Management</h2>
+<h2 class="text-2xl font-bold">Admin Dashboard</h2>
+<br>
+<h3 class="text-xl font-semibold">Statistics</h3>
+
+<section class="stats-section">
+  @if (stats$ | async; as stats) {
+  <div class="stats-grid">
+    <div class="stat-card">
+      <span class="stat-label">Users</span>
+      <span class="stat-value">{{ stats.users }}</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">Players</span>
+      <span class="stat-value">{{ stats.players }}</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">Teams</span>
+      <span class="stat-value">{{ stats.teams }}</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">Matches</span>
+      <span class="stat-value">{{ stats.matches }}</span>
+    </div>
+  </div>
+  } @else {
+  <p>Loading stats...</p>
+  }
+</section>
+
+<h3 class="text-xl font-semibold">User Management</h3>
 
 @if (users$ | async; as users) {
   @if (users.length > 0) {

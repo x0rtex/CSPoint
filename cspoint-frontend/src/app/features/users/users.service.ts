@@ -48,6 +48,13 @@ export class UsersService {
       .pipe(catchError(this.handleError));
   }
 
+  updateUserRoles(id: string, roles: string[]): Observable<User> {
+    let uri: string = `${this.apiUrl}/${id}/roles`;
+    return this.http
+      .patch<User>(uri, { roles }, { headers: this.getHeaders() })
+      .pipe(catchError(this.handleError));
+  }
+
   deleteUser(id: string): Observable<string> {
     let uri: string = `${this.apiUrl}/${id}`;
     return this.http
@@ -77,10 +84,6 @@ export class UsersService {
       favouriteTeamId: teamId,
     };
 
-    if (currentUser.password) {
-      updateData.password = currentUser.password;
-    }
-
     return this.updateUser(currentUser._id, updateData as User).pipe(
       tap((user) => this.authService.currentUser$.next(user)),
       catchError(this.handleError),
@@ -99,10 +102,6 @@ export class UsersService {
       roles: currentUser.roles,
       favouritePlayerId: playerId,
     };
-
-    if (currentUser.password) {
-      updateData.password = currentUser.password;
-    }
 
     return this.updateUser(currentUser._id, updateData as User).pipe(
       tap((user) => this.authService.currentUser$.next(user)),

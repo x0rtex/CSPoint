@@ -46,6 +46,14 @@
         <mat-icon matListItemIcon>person</mat-icon>
         <span matListItemTitle>Profile</span>
       </a>
+      @if (currentUser$ | async; as user) {
+      @if (user.roles && user.roles.includes('admin')) {
+      <a mat-list-item routerLink="/admin" routerLinkActive="active">
+        <mat-icon matListItemIcon>admin_panel_settings</mat-icon>
+        <span matListItemTitle>Admin</span>
+      </a>
+      }
+      }
       <a mat-list-item (click)="logout()">
         <mat-icon matListItemIcon>logout</mat-icon>
         <span matListItemTitle>Logout</span>

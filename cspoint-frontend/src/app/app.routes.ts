@@ -19,6 +19,7 @@ import { authGuard } from './core/guards/auth.guard';
 import { adminGuard } from './core/guards/admin.guard';
 import { Profile } from './features/users/profile/profile';
 import { editorGuard } from './core/guards/editor-guard';
+import { AdminComponent } from './features/admin/admin';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -37,4 +38,5 @@ export const routes: Routes = [
   { path: 'matches/create', component: MatchCreateComponent, canActivate: [authGuard] },
   { path: 'matches/:id/edit', component: MatchEditComponent, canActivate: [editorGuard] },
   { path: 'matches/:id', component: MatchDetailComponent },
+  { path: 'admin', component: AdminComponent, canActivate: [adminGuard] },
 ];

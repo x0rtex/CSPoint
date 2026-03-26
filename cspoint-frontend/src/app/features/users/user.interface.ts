@@ -5,7 +5,7 @@ export interface User {
   password: string;
   favouriteTeamId?: string;
   favouritePlayerId?: string;
-  roles: string[];
+  roles?: string[];
   dateJoined?: Date;
   lastUpdated?: Date;
 }

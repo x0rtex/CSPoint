@@ -1,6 +1,5 @@
 import { Component, effect, inject, input } from '@angular/core';
 import {
-  FormArray,
   FormBuilder,
   FormGroup,
   FormsModule,
@@ -51,7 +50,6 @@ export class UserForm {
         '',
         isEditMode ? [] : [Validators.required, Validators.minLength(6), Validators.maxLength(64)],
       ],
-      roles: this.fb.array([]),
     });
 
     effect((): void => {
@@ -66,13 +64,6 @@ export class UserForm {
         this.userForm.get('password')?.clearValidators();
         this.userForm.get('password')?.updateValueAndValidity();
 
-        this.roles.clear();
-
-        if (user.roles) {
-          user.roles.forEach((role: string): void => {
-            this.roles.push(this.fb.control(role));
-          });
-        }
       }
     });
   }
@@ -93,7 +84,7 @@ export class UserForm {
   }
 
   createNew(formValues: User) {
-    const { username, email, password, roles } = formValues;
+    const { username, email, password } = formValues;
 
     if (!password) {
       this.openErrorSnackBar('Password is required');
@@ -104,7 +95,6 @@ export class UserForm {
       username,
       email,
       password,
-      roles: roles && roles.length > 0 ? roles : ['user'],
     };
 
     this.usersService.addUser(userData).subscribe({
@@ -124,7 +114,6 @@ export class UserForm {
       username: updatedValues.username,
       email: updatedValues.email,
       password: updatedValues.password || '',
-      roles: updatedValues.roles || this.user()?.roles || ['user'],
     };
 
     if (updatedValues.password && updatedValues.password.trim() !== '') {
@@ -164,18 +153,6 @@ export class UserForm {
     return this.userForm.get('password');
   }
 
-  get roles(): FormArray {
-    return this.userForm.get('roles') as FormArray;
-  }
-
-  addRole(): void {
-    const roleControl = this.fb.control('');
-    this.roles.push(roleControl);
-  }
-
-  removeRole(index: number): void {
-    this.roles.removeAt(index);
-  }
 
   openErrorSnackBar(message: string): void {
     this.snackBar.open(message, 'Dismiss', {

@@ -7,6 +7,7 @@ import authRoutes from "./routes/auth";
 import playerRoutes from "./routes/players";
 import teamRoutes from "./routes/teams";
 import matchRoutes from "./routes/matches";
+import newsRoutes from "./routes/news";
 import { initDb } from "./database";
 
 dotenv.config();
@@ -22,6 +23,7 @@ app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/players", playerRoutes);
 app.use("/api/v1/teams", teamRoutes);
 app.use("/api/v1/matches", matchRoutes);
+app.use("/api/v1/news", newsRoutes);
 
 app.get("/ping", async (_req: Request, res: Response) => {
   res.json({ message: "Hello from Alekss !!" });

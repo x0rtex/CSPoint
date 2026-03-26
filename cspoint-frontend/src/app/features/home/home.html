@@ -3,3 +3,41 @@
 <p class="text-lg">
   Choose a category on the side bar to explore our collection of players, teams and matches.
 </p>
+
+<section class="news-section">
+  <div class="section-header">
+    <h2 class="text-xl font-semibold">HLTV Latest News</h2>
+  </div>
+
+  @if (news$ | async; as news) {
+    <div class="news-grid">
+      @for (item of news; track item.link) {
+        <mat-card class="news-card" appearance="outlined">
+          <img
+            mat-card-image
+            [src]="item.imageUrl || 'https://placehold.co/800x533/png?text=HLTV+News'"
+            [alt]="item.title"
+          />
+          <mat-card-title>{{ item.title }}</mat-card-title>
+          <mat-card-content>
+          @if (item.description) {
+            <p class="news-description">{{ item.description }}</p>
+          }
+          </mat-card-content>
+          <mat-card-actions>
+            <a matButton="outlined" [href]="item.link" target="_blank" rel="noopener">
+              Read on HLTV
+            </a>
+          </mat-card-actions>
+          <div class="meta">
+            @if (item.date) {
+              <span>{{ item.date }}</span>
+            }
+          </div>
+        </mat-card>
+      }
+    </div>
+  } @else {
+    <mat-spinner></mat-spinner>
+  }
+</section>

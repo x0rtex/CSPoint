@@ -6,9 +6,8 @@ import { sign as jwtSign } from "jsonwebtoken";
 
 const createAccessToken = (user: User | null): string => {
   const secret = process.env.JWTSECRET || "not very secret";
-  const expiresTime = "2 mins";
+  const expiresTime = "5 mins";
 
-  console.log(expiresTime);
   const payload: Object = {
     email: user?.email,
     username: user?.username,

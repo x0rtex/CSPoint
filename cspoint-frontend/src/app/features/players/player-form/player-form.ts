@@ -11,10 +11,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog';
-import { AsyncPipe, DatePipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { MatSelectModule } from '@angular/material/select';
-import { TeamService } from '../../teams/team.service';
-import { Team } from '../../teams/team.interface';
+import { TeamService } from '../../teams/team-create/teams/team.service';
+import { Team } from '../../teams/team-create/teams/team.interface';
 import { BehaviorSubject } from 'rxjs';
 
 @Component({
@@ -28,7 +28,6 @@ import { BehaviorSubject } from 'rxjs';
     MatCardModule,
     MatIconModule,
     MatSelectModule,
-    AsyncPipe,
     DatePipe,
   ],
   templateUrl: './player-form.html',
@@ -47,6 +46,7 @@ export class PlayerFormComponent {
   playerForm: FormGroup;
   currentDate: Date = new Date();
   teams$ = new BehaviorSubject<Team[]>([]);
+  teamSearch = '';
 
   constructor() {
     if (this.player()) {
@@ -79,6 +79,17 @@ export class PlayerFormComponent {
     this.teamService.getTeams(1, 1000).subscribe((res) => {
       this.teams$.next(res.data);
     });
+  }
+
+  filteredTeams(): Team[] {
+    const value = this.teamSearch.trim().toLowerCase();
+    const teams = this.teams$.value;
+    if (!value) return teams;
+    return teams.filter((team) => team.name.toLowerCase().includes(value));
+  }
+
+  compareById(a: string | null, b: string | null): boolean {
+    return String(a ?? '') === String(b ?? '');
   }
 
   onSubmit(): void {

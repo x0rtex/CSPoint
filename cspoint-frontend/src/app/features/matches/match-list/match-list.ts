@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { BehaviorSubject, forkJoin, map } from 'rxjs';
+import { BehaviorSubject, forkJoin, map, combineLatest } from 'rxjs';
 import { Match } from '../match.interface';
 import { MatchesService } from '../matches.service';
 import { AsyncPipe, DatePipe } from '@angular/common';
@@ -11,8 +11,9 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
-import { TeamService } from '../../teams/team.service';
-import { Team } from '../../teams/team.interface';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { TeamService } from '../../teams/team-create/teams/team.service';
+import { Team } from '../../teams/team-create/teams/team.interface';
 import { AuthService } from '../../../core/services/auth.service';
 
 interface MatchWithTeams extends Match {
@@ -28,6 +29,7 @@ interface MatchWithTeams extends Match {
     MatProgressSpinnerModule,
     MatTableModule,
     MatPaginatorModule,
+    MatFormFieldModule,
     MatInputModule,
     MatDividerModule,
     MatButtonModule,
@@ -44,6 +46,18 @@ export class MatchListComponent {
   private router = inject(Router);
 
   matches$ = new BehaviorSubject<MatchWithTeams[]>([]);
+  matchFilter$ = new BehaviorSubject<string>('');
+  filteredMatches$ = combineLatest([this.matches$, this.matchFilter$]).pipe(
+    map(([matches, filter]) => {
+      const value = filter.trim().toLowerCase();
+      if (!value) return matches;
+      return matches.filter((match) =>
+        [match.team1?.name, match.team2?.name, match.map]
+          .filter((field): field is string => typeof field === 'string')
+          .some((field) => field.toLowerCase().includes(value)),
+      );
+    }),
+  );
   totalMatches = 0;
   pageSize = 10;
   pageIndex = 0;
@@ -83,5 +97,9 @@ export class MatchListComponent {
 
   addMatch(): void {
     this.router.navigate(['/matches/create']);
+  }
+
+  onFilterChange(value: string): void {
+    this.matchFilter$.next(value);
   }
 }

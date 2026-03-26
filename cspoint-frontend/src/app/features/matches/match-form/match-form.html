@@ -7,10 +7,20 @@
   <form [formGroup]="matchForm" (ngSubmit)="onSubmit()" class="match-form">
     <mat-card-content>
       <!-- Team 1 -->
-      <mat-form-field>
+      <mat-form-field appearance="fill">
         <mat-label>Team 1</mat-label>
         <mat-select formControlName="team1Id">
-          @for (team of teams$ | async; track team._id) {
+          <mat-option>
+            <input
+              matInput
+              placeholder="Search teams"
+              [(ngModel)]="teamSearch"
+              [ngModelOptions]="{ standalone: true }"
+              (click)="$event.stopPropagation()"
+              (keydown)="$event.stopPropagation()"
+            />
+          </mat-option>
+          @for (team of filteredTeams(); track team._id) {
           <mat-option [value]="team._id">{{ team.name }}</mat-option>
           }
         </mat-select>
@@ -25,10 +35,20 @@
       </mat-form-field>
 
       <!-- Team 2 -->
-      <mat-form-field>
+      <mat-form-field appearance="fill">
         <mat-label>Team 2</mat-label>
         <mat-select formControlName="team2Id">
-          @for (team of teams$ | async; track team._id) {
+          <mat-option>
+            <input
+              matInput
+              placeholder="Search teams"
+              [(ngModel)]="teamSearch"
+              [ngModelOptions]="{ standalone: true }"
+              (click)="$event.stopPropagation()"
+              (keydown)="$event.stopPropagation()"
+            />
+          </mat-option>
+          @for (team of filteredTeams(); track team._id) {
           <mat-option [value]="team._id">{{ team.name }}</mat-option>
           }
         </mat-select>
@@ -43,7 +63,7 @@
       </mat-form-field>
 
       <!-- Team 1 Score -->
-      <mat-form-field>
+      <mat-form-field appearance="fill">
         <mat-label>Team 1 Score</mat-label>
         <input id="team1Score" type="number" formControlName="team1Score" matInput />
         <mat-icon matPrefix>sports_score</mat-icon>
@@ -57,7 +77,7 @@
       </mat-form-field>
 
       <!-- Team 2 Score -->
-      <mat-form-field>
+      <mat-form-field appearance="fill">
         <mat-label>Team 2 Score</mat-label>
         <input id="team2Score" type="number" formControlName="team2Score" matInput />
         <mat-icon matPrefix>sports_score</mat-icon>
@@ -71,7 +91,7 @@
       </mat-form-field>
 
       <!-- Map -->
-      <mat-form-field>
+      <mat-form-field appearance="fill">
         <mat-label>Map</mat-label>
         <input id="map" type="text" formControlName="map" matInput />
         <mat-icon matPrefix>map</mat-icon>
@@ -87,7 +107,7 @@
       </mat-form-field>
 
       <!-- Date -->
-      <mat-form-field>
+      <mat-form-field appearance="fill">
         <mat-label>Date</mat-label>
         <input id="date" type="datetime-local" formControlName="date" matInput />
         <mat-icon matPrefix>calendar_today</mat-icon>

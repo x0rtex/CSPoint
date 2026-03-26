@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { BehaviorSubject, forkJoin, map } from 'rxjs';
+import { BehaviorSubject, forkJoin, map, combineLatest } from 'rxjs';
 import { Player } from '../player.interface';
 import { PlayerService } from '../player.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -11,7 +11,8 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
-import { TeamService } from '../../teams/team.service';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { TeamService } from '../../teams/team-create/teams/team.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { UsersService } from '../../users/users.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -24,6 +25,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
     MatProgressSpinnerModule,
     MatTableModule,
     MatPaginatorModule,
+    MatFormFieldModule,
     MatInputModule,
     MatDividerModule,
     MatButtonModule,
@@ -41,6 +43,18 @@ export class PlayerListComponent {
   private snackBar = inject(MatSnackBar);
 
   players$ = new BehaviorSubject<(Player & { team?: any })[]>([]);
+  playerFilter$ = new BehaviorSubject<string>('');
+  filteredPlayers$ = combineLatest([this.players$, this.playerFilter$]).pipe(
+    map(([players, filter]) => {
+      const value = filter.trim().toLowerCase();
+      if (!value) return players;
+      return players.filter((player) =>
+        [player.nickname, player.name, player.country, player.team?.name]
+          .filter(Boolean)
+          .some((field) => field.toLowerCase().includes(value)),
+      );
+    }),
+  );
   totalPlayers = 0;
   pageSize = 10;
   pageIndex = 0;
@@ -79,6 +93,10 @@ export class PlayerListComponent {
 
   addPlayer(): void {
     this.router.navigate(['/players/create']);
+  }
+
+  onFilterChange(value: string): void {
+    this.playerFilter$.next(value);
   }
 
   setFavouritePlayer(playerId: string): void {

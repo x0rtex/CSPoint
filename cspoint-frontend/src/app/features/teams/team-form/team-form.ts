@@ -1,4 +1,4 @@
-import { AsyncPipe, DatePipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { Component, effect, inject, input, InputSignal } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -9,12 +9,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
-import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog';
+import { ConfirmDialogComponent } from '../../../../../shared/components/confirm-dialog/confirm-dialog';
 import { Team } from '../team.interface';
 import { TeamService } from '../team.service';
 import { MatSelectModule } from '@angular/material/select';
-import { PlayerService } from '../../players/player.service';
-import { Player } from '../../players/player.interface';
+import { PlayerService } from '../../../../players/player.service';
+import { Player } from '../../../../players/player.interface';
 import { BehaviorSubject } from 'rxjs';
 
 @Component({
@@ -28,7 +28,6 @@ import { BehaviorSubject } from 'rxjs';
     MatCardModule,
     MatIconModule,
     MatSelectModule,
-    AsyncPipe,
     DatePipe,
   ],
   templateUrl: './team-form.html',
@@ -47,6 +46,7 @@ export class TeamFormComponent {
   teamForm: FormGroup;
   currentDate: Date = new Date();
   players$ = new BehaviorSubject<Player[]>([]);
+  playerSearch = '';
 
   constructor() {
     if (this.team()) {
@@ -85,6 +85,19 @@ export class TeamFormComponent {
     this.playerService.getPlayers(1, 1000).subscribe((res) => {
       this.players$.next(res.data);
     });
+  }
+
+  filteredPlayers(): Player[] {
+    const value = this.playerSearch.trim().toLowerCase();
+    const players = this.players$.value;
+    if (!value) return players;
+    return players.filter((player) =>
+      `${player.nickname} ${player.name}`.toLowerCase().includes(value),
+    );
+  }
+
+  compareById(a: string | null, b: string | null): boolean {
+    return String(a ?? '') === String(b ?? '');
   }
 
   onSubmit(): void {

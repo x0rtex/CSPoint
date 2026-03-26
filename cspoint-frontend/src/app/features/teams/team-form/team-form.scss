@@ -13,6 +13,15 @@
   mat-card-content {
     display: flex;
     flex-direction: column;
+    gap: 12px;
+  }
+
+  .mat-mdc-form-field {
+    width: 100%;
+  }
+
+  .mdc-text-field--filled {
+    background-color: var(--mat-sys-surface-container-highest);
   }
 
   mat-card-actions {
@@ -48,9 +57,12 @@
 
 .playerId {
   display: flex;
-  align-items: flex-start;
+  flex-direction: column;
+  gap: 12px;
+}
 
-  .mat-mdc-form-field {
-    margin-right: 10px;
-  }
+.playerId-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
 }

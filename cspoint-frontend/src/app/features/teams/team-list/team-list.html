@@ -1,5 +1,10 @@
 <h2 class="text-2xl font-bold">Team List</h2>
-@if (teams$ | async; as teams) { @if (isAuthenticated$ | async) {
+<mat-form-field appearance="fill">
+  <mat-label>Search teams</mat-label>
+  <input matInput type="text" (input)="onFilterChange($any($event.target).value)" />
+  <mat-icon matPrefix>search</mat-icon>
+</mat-form-field>
+@if (filteredTeams$ | async; as teams) { @if (isAuthenticated$ | async) {
 <button matButton="outlined" (click)="addTeam()">
   <mat-icon>add</mat-icon>
   Add Team

@@ -7,7 +7,7 @@
   <form [formGroup]="playerForm" (ngSubmit)="onSubmit()" class="player-form">
     <mat-card-content>
         <!-- Name -->
-        <mat-form-field>
+        <mat-form-field appearance="fill">
           <mat-label>Name</mat-label>
           <input id="name" type="text" formControlName="name" matInput />
           <mat-icon matPrefix>person</mat-icon>
@@ -23,7 +23,7 @@
         </mat-form-field>
 
         <!-- Nickname -->
-        <mat-form-field>
+        <mat-form-field appearance="fill">
           <mat-label>Nickname</mat-label>
           <input id="nickname" type="text" formControlName="nickname" matInput />
           <mat-icon matPrefix>sports_esports</mat-icon>
@@ -39,7 +39,7 @@
         </mat-form-field>
 
         <!-- Country -->
-        <mat-form-field>
+        <mat-form-field appearance="fill">
           <mat-label>Country</mat-label>
           <input id="country" type="text" formControlName="country" matInput />
           <mat-icon matPrefix>flag</mat-icon>
@@ -55,7 +55,7 @@
         </mat-form-field>
 
         <!-- Photo URL -->
-        <mat-form-field>
+        <mat-form-field appearance="fill">
           <mat-label>Photo URL</mat-label>
           <input id="photoUrl" type="text" formControlName="photoUrl" matInput />
           <mat-icon matPrefix>photo_camera</mat-icon>
@@ -67,7 +67,7 @@
         </mat-form-field>
 
         <!-- Rating -->
-        <mat-form-field>
+        <mat-form-field appearance="fill">
           <mat-label>Rating</mat-label>
           <input id="rating" type="number" formControlName="rating" matInput />
           <mat-icon matPrefix>star</mat-icon>
@@ -87,11 +87,21 @@
         </mat-form-field>
 
         <!-- Team -->
-        <mat-form-field>
+        <mat-form-field appearance="fill">
           <mat-label>Team</mat-label>
           <mat-select formControlName="teamId">
+            <mat-option>
+            <input
+              matInput
+              placeholder="Search teams"
+              [(ngModel)]="teamSearch"
+              [ngModelOptions]="{ standalone: true }"
+              (click)="$event.stopPropagation()"
+              (keydown)="$event.stopPropagation()"
+            />
+            </mat-option>
             <mat-option [value]="''">No team</mat-option>
-            @for (team of teams$ | async; track team._id) {
+            @for (team of filteredTeams(); track team._id) {
               <mat-option [value]="team._id">{{ team.name }}</mat-option>
             }
           </mat-select>

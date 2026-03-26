@@ -1,5 +1,10 @@
 <h2 class="text-2xl font-bold">Match List</h2>
-@if (matches$ | async; as matches) { @if (isAuthenticated$ | async) {
+<mat-form-field appearance="fill">
+  <mat-label>Search matches</mat-label>
+  <input matInput type="text" (input)="onFilterChange($any($event.target).value)" />
+  <mat-icon matPrefix>search</mat-icon>
+</mat-form-field>
+@if (filteredMatches$ | async; as matches) { @if (isAuthenticated$ | async) {
 <button matButton="outlined" (click)="addMatch()">
   <mat-icon>add</mat-icon>
   Add Match

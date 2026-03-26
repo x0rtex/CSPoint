@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { TeamService } from '../team.service';
 import { Router, RouterLink } from '@angular/router';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, combineLatest, map } from 'rxjs';
 import { Team } from '../team.interface';
 import { AsyncPipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
@@ -11,8 +11,9 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
-import { AuthService } from '../../../core/services/auth.service';
-import { UsersService } from '../../users/users.service';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { AuthService } from '../../../../../core/services/auth.service';
+import { UsersService } from '../../../../users/users.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
@@ -23,6 +24,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
     MatProgressSpinnerModule,
     MatTableModule,
     MatPaginatorModule,
+    MatFormFieldModule,
     MatInputModule,
     MatDividerModule,
     MatButtonModule,
@@ -39,6 +41,18 @@ export class TeamListComponent {
   private snackBar = inject(MatSnackBar);
 
   teams$ = new BehaviorSubject<Team[]>([]);
+  teamFilter$ = new BehaviorSubject<string>('');
+  filteredTeams$ = combineLatest([this.teams$, this.teamFilter$]).pipe(
+    map(([teams, filter]) => {
+      const value = filter.trim().toLowerCase();
+      if (!value) return teams;
+      return teams.filter((team) =>
+        [team.name, team.country]
+          .filter(Boolean)
+          .some((field) => field.toLowerCase().includes(value)),
+      );
+    }),
+  );
   totalTeams = 0;
   pageSize = 10;
   pageIndex = 0;
@@ -49,6 +63,10 @@ export class TeamListComponent {
 
   addTeam(): void {
     this.router.navigate(['/teams/create']);
+  }
+
+  onFilterChange(value: string): void {
+    this.teamFilter$.next(value);
   }
 
   setFavouriteTeam(teamId: string): void {

@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jest --no-cache --detectOpenHandles",
     "build": "tsc",
-    "start": "node build/server.js",
+    "start": "node build/src/server.js",
     "dev": "nodemon"
   },
   "keywords": [],

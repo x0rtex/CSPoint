@@ -10,5 +10,8 @@
     "dev:api": "npm run dev -w cspoint-api",
     "build": "npm run build -w cspoint-frontend && npm run build -w cspoint-api",
     "test": "npm run test -w cspoint-frontend && npm run test -w cspoint-api"
+  },
+  "dependencies": {
+    "hltv-next": "^3.5.16"
   }
 }

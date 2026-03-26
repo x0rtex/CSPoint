@@ -68,20 +68,25 @@
         }
       </mat-form-field>
 
-      <!-- Player IDs -->
-      @if(playerIds.length > 0) {
-      <mat-card-subtitle>Player IDs</mat-card-subtitle>
-      } @for(playerIds of playerIds.controls; track i; let i = $index) {
+      <!-- Players -->
+      <mat-card-subtitle>Players</mat-card-subtitle>
       <div formArrayName="playerIds" class="playerId">
-        <mat-form-field>
-          <mat-label>Player ID {{i+1}}:</mat-label>
-          <input [formControlName]="i" placeholder="Enter player ID" id="playerId-{{i}}" matInput />
-        </mat-form-field>
-        <button matButton="outlined" type="button" (click)="removePlayerId(i)">
-          Remove Player ID
-        </button>
+        @for (control of playerIds.controls; track i; let i = $index) {
+        <div class="playerId-row">
+          <mat-form-field>
+            <mat-label>Player {{ i + 1 }}</mat-label>
+            <mat-select [formControlName]="i">
+              @for (player of players$ | async; track player._id) {
+              <mat-option [value]="player._id">{{ player.nickname }} ({{ player.name }})</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+          <button matButton="outlined" type="button" (click)="removePlayerId(i)">
+            Remove Player
+          </button>
+        </div>
+        }
       </div>
-      }
     </mat-card-content>
     <mat-card-actions>
       <!-- Submit -->

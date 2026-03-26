@@ -6,10 +6,14 @@
   <!-- Match Form -->
   <form [formGroup]="matchForm" (ngSubmit)="onSubmit()" class="match-form">
     <mat-card-content>
-      <!-- Team 1 ID -->
+      <!-- Team 1 -->
       <mat-form-field>
-        <mat-label>Team 1 ID</mat-label>
-        <input id="team1Id" type="text" formControlName="team1Id" matInput />
+        <mat-label>Team 1</mat-label>
+        <mat-select formControlName="team1Id">
+          @for (team of teams$ | async; track team._id) {
+          <mat-option [value]="team._id">{{ team.name }}</mat-option>
+          }
+        </mat-select>
         <mat-icon matPrefix>group</mat-icon>
 
         <!-- Validation -->
@@ -20,10 +24,14 @@
         }
       </mat-form-field>
 
-      <!-- Team 2 ID -->
+      <!-- Team 2 -->
       <mat-form-field>
-        <mat-label>Team 2 ID</mat-label>
-        <input id="team2Id" type="text" formControlName="team2Id" matInput />
+        <mat-label>Team 2</mat-label>
+        <mat-select formControlName="team2Id">
+          @for (team of teams$ | async; track team._id) {
+          <mat-option [value]="team._id">{{ team.name }}</mat-option>
+          }
+        </mat-select>
         <mat-icon matPrefix>group</mat-icon>
 
         <!-- Validation -->
@@ -113,9 +121,9 @@
 <h2 class="preview-title">Preview</h2>
 <mat-card class="match-card" appearance="outlined">
   <mat-card-header>
-    <mat-card-title
-      >{{matchForm.get('team1Id')?.value}} vs {{matchForm.get('team2Id')?.value}}</mat-card-title
-    >
+      <mat-card-title>
+        {{matchForm.get('team1Id')?.value}} vs {{matchForm.get('team2Id')?.value}}
+      </mat-card-title>
     <mat-card-subtitle
       >{{matchForm.get('date')?.value | date:'MMMM d, y \'at\' h:mm a'}}</mat-card-subtitle
     >

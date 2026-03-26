@@ -86,10 +86,15 @@
           }
         </mat-form-field>
 
-        <!-- Team ID -->
+        <!-- Team -->
         <mat-form-field>
-          <mat-label>Team ID</mat-label>
-          <input id="teamId" type="text" formControlName="teamId" matInput />
+          <mat-label>Team</mat-label>
+          <mat-select formControlName="teamId">
+            <mat-option [value]="''">No team</mat-option>
+            @for (team of teams$ | async; track team._id) {
+              <mat-option [value]="team._id">{{ team.name }}</mat-option>
+            }
+          </mat-select>
           <mat-icon matPrefix>group</mat-icon>
         </mat-form-field>
     </mat-card-content>

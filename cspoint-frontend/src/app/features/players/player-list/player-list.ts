@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { forkJoin, map, Observable, Subscriber } from 'rxjs';
+import { BehaviorSubject, forkJoin, map } from 'rxjs';
 import { Player } from '../player.interface';
 import { PlayerService } from '../player.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -10,6 +10,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { TeamService } from '../../teams/team.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { UsersService } from '../../users/users.service';
@@ -22,6 +23,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
     RouterLink,
     MatProgressSpinnerModule,
     MatTableModule,
+    MatPaginatorModule,
     MatInputModule,
     MatDividerModule,
     MatButtonModule,
@@ -38,25 +40,41 @@ export class PlayerListComponent {
   private router = inject(Router);
   private snackBar = inject(MatSnackBar);
 
-  players$: Observable<Player[]> = this.playerService.getPlayers();
+  players$ = new BehaviorSubject<(Player & { team?: any })[]>([]);
+  totalPlayers = 0;
+  pageSize = 10;
+  pageIndex = 0;
   displayedColumns: string[] = ['image', 'nickname', 'name', 'country', 'rating', 'team', 'action'];
 
   isAuthenticated$ = this.authService.isAuthenticated$;
   currentUser$ = this.authService.currentUser$;
 
   ngOnInit(): void {
-    this.players$ = forkJoin({
-      players: this.playerService.getPlayers(),
-      teams: this.teamService.getTeams(),
-    }).pipe(
-      map(({ players, teams }) => {
-        const teamMap = new Map(teams.map((t) => [t._id!, t]));
-        return players.map((player) => ({
-          ...player,
-          team: player.teamId ? teamMap.get(player.teamId) : undefined,
-        }));
-      }),
-    );
+    this.loadPlayers();
+  }
+
+  loadPlayers(): void {
+    forkJoin({
+      players: this.playerService.getPlayers(this.pageIndex + 1, this.pageSize),
+      teams: this.teamService.getTeams(1, 1000),
+    })
+      .pipe(
+        map(({ players, teams }) => {
+          this.totalPlayers = players.total;
+          const teamMap = new Map(teams.data.map((t) => [t._id!, t]));
+          return players.data.map((player) => ({
+            ...player,
+            team: player.teamId ? teamMap.get(player.teamId) : undefined,
+          }));
+        }),
+      )
+      .subscribe((data) => this.players$.next(data));
+  }
+
+  onPageChange(event: PageEvent): void {
+    this.pageIndex = event.pageIndex;
+    this.pageSize = event.pageSize;
+    this.loadPlayers();
   }
 
   addPlayer(): void {

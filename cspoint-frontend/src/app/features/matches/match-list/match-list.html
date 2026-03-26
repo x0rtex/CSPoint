@@ -45,6 +45,12 @@
     <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="match-row"></tr>
   </table>
 </div>
+<mat-paginator
+  [length]="totalMatches"
+  [pageSize]="pageSize"
+  [pageSizeOptions]="[5, 10, 20]"
+  (page)="onPageChange($event)"
+></mat-paginator>
 } @else {
 <p>No matches found.</p>
 } } @else {

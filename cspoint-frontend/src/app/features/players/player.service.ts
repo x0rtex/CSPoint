@@ -3,6 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { catchError, forkJoin, Observable, of, retry, throwError } from 'rxjs';
 import { Player } from './player.interface';
+import { PagedResponse } from '../../shared/models/paged-response';
 
 @Injectable({
   providedIn: 'root',
@@ -31,8 +32,10 @@ export class PlayerService {
     return throwError(() => new Error('Something went wrong, please try again later'));
   }
 
-  getPlayers(): Observable<Player[]> {
-    return this.http.get<Player[]>(this.apiUrl).pipe(catchError(this.handleError));
+  getPlayers(page = 1, limit = 10): Observable<PagedResponse<Player>> {
+    return this.http
+      .get<PagedResponse<Player>>(`${this.apiUrl}?page=${page}&limit=${limit}`)
+      .pipe(catchError(this.handleError));
   }
 
   getPlayer(id: string): Observable<Player> {

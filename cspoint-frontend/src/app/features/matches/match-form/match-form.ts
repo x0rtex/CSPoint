@@ -1,4 +1,4 @@
-import { DatePipe } from '@angular/common';
+import { AsyncPipe, DatePipe } from '@angular/common';
 import { Component, effect, inject, input, InputSignal } from '@angular/core';
 import {
   FormBuilder,
@@ -18,6 +18,10 @@ import { Router } from '@angular/router';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog';
 import { Match } from '../match.interface';
 import { MatchesService } from '../matches.service';
+import { MatSelectModule } from '@angular/material/select';
+import { TeamService } from '../../teams/team.service';
+import { Team } from '../../teams/team.interface';
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'app-match-form',
@@ -29,6 +33,8 @@ import { MatchesService } from '../matches.service';
     MatInputModule,
     MatCardModule,
     MatIconModule,
+    MatSelectModule,
+    AsyncPipe,
     DatePipe,
   ],
   templateUrl: './match-form.html',
@@ -40,11 +46,13 @@ export class MatchFormComponent {
   private snackBar: MatSnackBar = inject(MatSnackBar);
 
   matchesService: MatchesService = inject(MatchesService);
+  teamService: TeamService = inject(TeamService);
   router: Router = inject(Router);
 
   match: InputSignal<Match | undefined> = input<Match | undefined>();
   matchForm: FormGroup;
   currentDate: Date = new Date();
+  teams$ = new BehaviorSubject<Team[]>([]);
 
   constructor() {
     if (this.match()) {
@@ -72,6 +80,10 @@ export class MatchFormComponent {
           date: match.date,
         });
       }
+    });
+
+    this.teamService.getTeams(1, 1000).subscribe((res) => {
+      this.teams$.next(res.data);
     });
   }
 

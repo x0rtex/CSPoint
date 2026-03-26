@@ -70,6 +70,12 @@
     <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="player-row"></tr>
   </table>
 </div>
+<mat-paginator
+  [length]="totalPlayers"
+  [pageSize]="pageSize"
+  [pageSizeOptions]="[5, 10, 20]"
+  (page)="onPageChange($event)"
+></mat-paginator>
 } @else {
 <p>No players found.</p>
 } } @else {

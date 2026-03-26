@@ -3,6 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { Observable, throwError, retry, catchError } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { Match } from './match.interface';
+import { PagedResponse } from '../../shared/models/paged-response';
 
 @Injectable({
   providedIn: 'root',
@@ -31,8 +32,10 @@ export class MatchesService {
       return throwError(() => new Error('Something went wrong, please try again later'));
     }
 
-    getMatches(): Observable<Match[]> {
-      return this.http.get<Match[]>(this.apiUrl).pipe( catchError(this.handleError));
+    getMatches(page = 1, limit = 10): Observable<PagedResponse<Match>> {
+      return this.http
+        .get<PagedResponse<Match>>(`${this.apiUrl}?page=${page}&limit=${limit}`)
+        .pipe(catchError(this.handleError));
     }
 
     getMatch(id: string): Observable<Match> {

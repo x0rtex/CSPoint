@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { TeamService } from '../team.service';
 import { Router, RouterLink } from '@angular/router';
-import { Observable } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { Team } from '../team.interface';
 import { AsyncPipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
@@ -10,6 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { AuthService } from '../../../core/services/auth.service';
 import { UsersService } from '../../users/users.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -21,6 +22,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
     RouterLink,
     MatProgressSpinnerModule,
     MatTableModule,
+    MatPaginatorModule,
     MatInputModule,
     MatDividerModule,
     MatButtonModule,
@@ -36,7 +38,10 @@ export class TeamListComponent {
   private router = inject(Router);
   private snackBar = inject(MatSnackBar);
 
-  teams$: Observable<Team[]> = this.teamService.getTeams();
+  teams$ = new BehaviorSubject<Team[]>([]);
+  totalTeams = 0;
+  pageSize = 10;
+  pageIndex = 0;
   displayedColumns: string[] = ['logo', 'name', 'country', 'ranking', 'action'];
 
   isAuthenticated$ = this.authService.isAuthenticated$;
@@ -62,5 +67,22 @@ export class TeamListComponent {
   isFavouriteTeam(teamId: string | undefined): boolean {
     if (!teamId) return false;
     return this.authService.currentUser$.value?.favouriteTeamId === teamId;
+  }
+
+  loadTeams(): void {
+    this.teamService.getTeams(this.pageIndex + 1, this.pageSize).subscribe((res) => {
+      this.totalTeams = res.total;
+      this.teams$.next(res.data);
+    });
+  }
+
+  onPageChange(event: PageEvent): void {
+    this.pageIndex = event.pageIndex;
+    this.pageSize = event.pageSize;
+    this.loadTeams();
+  }
+
+  ngOnInit(): void {
+    this.loadTeams();
   }
 }

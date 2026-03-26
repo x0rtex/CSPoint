@@ -11,7 +11,11 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog';
-import { DatePipe } from '@angular/common';
+import { AsyncPipe, DatePipe } from '@angular/common';
+import { MatSelectModule } from '@angular/material/select';
+import { TeamService } from '../../teams/team.service';
+import { Team } from '../../teams/team.interface';
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'app-player-form',
@@ -23,7 +27,9 @@ import { DatePipe } from '@angular/common';
     MatInputModule,
     MatCardModule,
     MatIconModule,
-    DatePipe
+    MatSelectModule,
+    AsyncPipe,
+    DatePipe,
   ],
   templateUrl: './player-form.html',
   styleUrl: './player-form.scss',
@@ -34,11 +40,13 @@ export class PlayerFormComponent {
   private snackBar: MatSnackBar = inject(MatSnackBar);
 
   playerService: PlayerService = inject(PlayerService);
+  teamService: TeamService = inject(TeamService);
   router: Router = inject(Router);
 
   player: InputSignal<Player | undefined> = input<Player | undefined>();
   playerForm: FormGroup;
   currentDate: Date = new Date();
+  teams$ = new BehaviorSubject<Team[]>([]);
 
   constructor() {
     if (this.player()) {
@@ -66,6 +74,10 @@ export class PlayerFormComponent {
           teamId: player.teamId,
         });
       }
+    });
+
+    this.teamService.getTeams(1, 1000).subscribe((res) => {
+      this.teams$.next(res.data);
     });
   }
 

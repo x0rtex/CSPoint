@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { forkJoin, map, Observable } from 'rxjs';
+import { BehaviorSubject, forkJoin, map } from 'rxjs';
 import { Match } from '../match.interface';
 import { MatchesService } from '../matches.service';
 import { AsyncPipe, DatePipe } from '@angular/common';
@@ -10,6 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { TeamService } from '../../teams/team.service';
 import { Team } from '../../teams/team.interface';
 import { AuthService } from '../../../core/services/auth.service';
@@ -26,6 +27,7 @@ interface MatchWithTeams extends Match {
     RouterLink,
     MatProgressSpinnerModule,
     MatTableModule,
+    MatPaginatorModule,
     MatInputModule,
     MatDividerModule,
     MatButtonModule,
@@ -41,26 +43,42 @@ export class MatchListComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
 
-  matches$: Observable<MatchWithTeams[]> = this.matchesService.getMatches();
+  matches$ = new BehaviorSubject<MatchWithTeams[]>([]);
+  totalMatches = 0;
+  pageSize = 10;
+  pageIndex = 0;
   displayedColumns: string[] = ['matchup', 'score', 'map', 'date', 'action'];
 
   isAuthenticated$ = this.authService.isAuthenticated$;
   currentUser$ = this.authService.currentUser$;
 
   ngOnInit(): void {
-    this.matches$ = forkJoin({
-      matches: this.matchesService.getMatches(),
-      teams: this.teamService.getTeams(),
-    }).pipe(
-      map(({ matches, teams }) => {
-        const teamMap = new Map(teams.map((t) => [t._id!, t]));
-        return matches.map((match) => ({
-          ...match,
-          team1: teamMap.get(match.team1Id),
-          team2: teamMap.get(match.team2Id),
-        }));
-      }),
-    );
+    this.loadMatches();
+  }
+
+  loadMatches(): void {
+    forkJoin({
+      matches: this.matchesService.getMatches(this.pageIndex + 1, this.pageSize),
+      teams: this.teamService.getTeams(1, 1000),
+    })
+      .pipe(
+        map(({ matches, teams }) => {
+          this.totalMatches = matches.total;
+          const teamMap = new Map(teams.data.map((t) => [t._id!, t]));
+          return matches.data.map((match) => ({
+            ...match,
+            team1: teamMap.get(match.team1Id),
+            team2: teamMap.get(match.team2Id),
+          }));
+        }),
+      )
+      .subscribe((data) => this.matches$.next(data));
+  }
+
+  onPageChange(event: PageEvent): void {
+    this.pageIndex = event.pageIndex;
+    this.pageSize = event.pageSize;
+    this.loadMatches();
   }
 
   addMatch(): void {

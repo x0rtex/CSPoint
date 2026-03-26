@@ -11,7 +11,8 @@ const createAccessToken = (user: User | null): string => {
   console.log(expiresTime);
   const payload: Object = {
     email: user?.email,
-    name: user?.name,
+    username: user?.username,
+    roles: user?.roles ?? ["user"],
   };
   const token = jwtSign(payload, secret, { expiresIn: expiresTime });
 
@@ -32,12 +33,22 @@ export const handleLogin = async (req: Request, res: Response) => {
     email: email.toLowerCase(),
   })) as unknown as User;
 
-  if (user && user.hashedPassword) {
-    const isPasswordValid = await argon2.verify(user.hashedPassword, password);
+  if (user && user.password) {
+    const storedPassword = String(user.password);
+    if (!storedPassword.startsWith("$")) {
+      await argon2.verify(dummyHash, password);
+      res.status(401).json({
+        message: "Invalid email or password!",
+      });
+      return;
+    }
+
+    const isPasswordValid = await argon2.verify(storedPassword, password);
     // If password is valid send a token
 
     if (isPasswordValid) {
-      res.status(201).json({ accessToken: createAccessToken(user) });
+      const { password, ...safeUser } = user;
+      res.status(201).json({ accessToken: createAccessToken(user), user: safeUser });
     } else {
       res.status(401).json({
         message: "Invalid email or password!",

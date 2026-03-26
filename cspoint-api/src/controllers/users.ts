@@ -1,7 +1,13 @@
 import { Request, Response } from "express";
 
 import { collections } from "../database";
-import { createUserSchema, User } from "../models/user";
+import { User } from "../models/user";
+import {
+  createUserSchema,
+  updateUserProfileSchema,
+  updateUserRolesSchema,
+  updateUserSchema,
+} from "../schemas/user";
 import { ObjectId } from "mongodb";
 import argon2 from "argon2";
 
@@ -9,7 +15,7 @@ export const getUsers = async (_req: Request, res: Response) => {
   try {
     const users = (await collections.users
       ?.find({})
-      .project({ hashedPassword: 0 })
+      .project({ password: 0 })
       .toArray()) as unknown as User[];
 
     res.status(200).json(users);
@@ -36,7 +42,7 @@ export const getUserById = async (req: Request, res: Response) => {
     const query = { _id: new ObjectId(id) };
 
     const user = (await collections.users?.findOne(query, {
-      projection: { hashedPassord: 0 },
+      projection: { password: 0 },
     })) as unknown as User;
 
     if (user) {
@@ -53,7 +59,7 @@ export const getUserById = async (req: Request, res: Response) => {
 };
 
 export const createUser = async (req: Request, res: Response) => {
-  const { name, phoneNumber, email, dob, tags, roles } = req.body;
+  const { username, phoneNumber, email, dob } = req.body;
   try {
     const existingUser = await collections.users?.findOne({
       email: req.body.email,
@@ -65,17 +71,16 @@ export const createUser = async (req: Request, res: Response) => {
     }
 
     const newUser: User = {
-      name: name,
-      phoneNumber: phoneNumber,
+      username: username,
+      phoneNumber: phoneNumber ?? "",
       email: email,
-      dob: new Date(dob),
+      ...(dob !== undefined && { dob: new Date(dob) }),
       dateJoined: new Date(),
       lastUpdated: new Date(),
-      tags: tags || [],
-      roles: roles || [],
+      roles: ["user"],
     };
 
-    newUser.hashedPassword = await argon2.hash(req.body.password);
+    newUser.password = await argon2.hash(req.body.password);
 
     const result = await collections.users?.insertOne(newUser);
 
@@ -100,7 +105,7 @@ export const createUser = async (req: Request, res: Response) => {
 };
 
 export const updateUser = async (req: Request, res: Response) => {
-  const validation = createUserSchema.safeParse(req.body);
+  const validation = updateUserProfileSchema.safeParse(req.body);
   if (!validation.success) {
     return res.status(400).json({
       message: "Validation failed",
@@ -115,6 +120,10 @@ export const updateUser = async (req: Request, res: Response) => {
 
   let id: string = idParam;
   try {
+    if (req.body.password) {
+      req.body.password = await argon2.hash(req.body.password);
+    }
+
     const query = { _id: new ObjectId(id) };
     const result = await collections.users?.updateOne(query, {
       $set: req.body,
@@ -130,6 +139,50 @@ export const updateUser = async (req: Request, res: Response) => {
       console.log(`Error with ${error}`);
     }
     res.status(404).send(`Unable to find matching document with id: ${id}`);
+  }
+};
+
+export const updateUserRoles = async (req: Request, res: Response) => {
+  const validation = updateUserRolesSchema.safeParse(req.body);
+  if (!validation.success) {
+    return res.status(400).json({
+      message: "Validation failed",
+      errors: validation.error.issues,
+    });
+  }
+
+  const idParam = req.params.id;
+  if (Array.isArray(idParam) || !ObjectId.isValid(idParam)) {
+    return res.status(400).json({ message: "Invalid id parameter" });
+  }
+
+  const id: string = idParam;
+
+  try {
+    const query = { _id: new ObjectId(id) };
+    const result = await collections.users?.updateOne(query, {
+      $set: { roles: req.body.roles, lastUpdated: new Date() },
+    });
+
+    if (result?.modifiedCount === 1) {
+      const updatedUser = await collections.users?.findOne(query, {
+        projection: { password: 0 },
+      });
+      return res.status(200).send(updatedUser);
+    }
+
+    if (result?.matchedCount === 0) {
+      return res.status(404).send(`User with id ${id} not found`);
+    }
+
+    return res.status(500).send(`Unable to update user roles with id: ${id}`);
+  } catch (error) {
+    if (error instanceof Error) {
+      console.log(`Issue with updating ${error.message}`);
+    } else {
+      console.log(`Error with ${error}`);
+    }
+    return res.status(500).send(`Unable to update user roles with id: ${id}`);
   }
 };
 

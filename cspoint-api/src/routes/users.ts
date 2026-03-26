@@ -4,18 +4,20 @@ import {
   getUserById,
   createUser,
   updateUser,
+  updateUserRoles,
   deleteUser,
 } from "../controllers/users";
-import { authenticateKey, validJWTProvided } from "../middleware/auth.middleware";
-import { createUserSchema } from "../models/user";
+import { isAdmin, validJWTProvided } from "../middleware/auth.middleware";
+import { createUserSchema } from "../schemas/user";
 import { validate } from "../middleware/validate.middleware";
 
 const router: Router = express.Router();
 
 router.get("/", getUsers);
 router.get("/:id", getUserById);
-router.post("/", authenticateKey, validate(createUserSchema), createUser);
-router.put("/:id", authenticateKey, updateUser);
-router.delete('/:id', validJWTProvided, deleteUser);
+router.post("/", validate(createUserSchema), createUser);
+router.put("/:id", updateUser);
+router.patch("/:id/roles", validJWTProvided, isAdmin, updateUserRoles);
+router.delete('/:id', validJWTProvided, isAdmin, deleteUser);
 
 export default router;

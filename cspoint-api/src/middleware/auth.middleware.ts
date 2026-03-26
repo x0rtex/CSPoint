@@ -1,20 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { verify as jwtVerify } from "jsonwebtoken";
 
-export const authenticateKey = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  const apiKey = req.headers["x-api-key"];
-  if (!apiKey) {
-    return res
-      .status(401)
-      .json({ message: "Unauthorized: API key is missing" });
-  }
-  next();
-};
-
 export const validJWTProvided = async (
   req: Request,
   res: Response,
@@ -44,5 +30,36 @@ export const validJWTProvided = async (
   } catch (err) {
     res.status(403).send();
     return;
+  }
+};
+
+export const isEditor = async (
+  _req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  const roles = res.locals?.payload?.roles;
+
+  if (
+    (roles && Array.isArray(roles) && roles.includes("editor")) ||
+    (roles && Array.isArray(roles) && roles.includes("admin"))
+  ) {
+    next();
+  } else {
+    res.status(403).json({ error: "Editor access required" });
+  }
+};
+
+export const isAdmin = async (
+  _req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  const roles = res.locals?.payload?.roles;
+
+  if (roles && Array.isArray(roles) && roles.includes("admin")) {
+    next();
+  } else {
+    res.status(403).json({ error: "Admin access required" });
   }
 };

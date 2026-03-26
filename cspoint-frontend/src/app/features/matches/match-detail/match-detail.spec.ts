@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { MatchDetailComponent } from './match-detail';
+import { RouterTestingModule } from '@angular/router/testing';
 
 describe('MatchDetail', () => {
   let component: MatchDetailComponent;
@@ -8,7 +8,7 @@ describe('MatchDetail', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MatchDetailComponent],
+      imports: [MatchDetailComponent, RouterTestingModule],
     }).compileComponents();
 
     fixture = TestBed.createComponent(MatchDetailComponent);

@@ -1,9 +1,9 @@
-import { createUserSchema } from "../../src/models/user";
+import { createUserSchema } from "../../src/schemas/user";
 
 const validUser = {
-  name: "Una",
-  phoneNumber: "0871234567",
+  username: "Una",
   email: "john.doe@mymail.ie",
+  password: "UserUserUser123!",
   dob: "2001/01/12",
 };
 

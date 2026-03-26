@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { PlayerListComponent } from './player-list';
+import { RouterTestingModule } from '@angular/router/testing';
 
 describe('PlayerListComponent', () => {
   let component: PlayerListComponent;
@@ -8,7 +8,7 @@ describe('PlayerListComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PlayerListComponent]
+      imports: [PlayerListComponent, RouterTestingModule]
     })
     .compileComponents();
 

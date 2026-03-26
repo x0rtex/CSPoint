@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  apiUrl: 'http://cspoint.x0rtex.xyz/api/v1',
+  apiUrl: 'https://<your-api-domain>/api/v1',
   apiKey: 'super-secure-api-key',
 };

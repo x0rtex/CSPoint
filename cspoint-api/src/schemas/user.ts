@@ -4,7 +4,16 @@ export const createUserSchema = z.object({
   username: z.string().min(1).max(50),
   email: z.email().min(5),
   password: z.string().min(1).max(64),
-  dob: z.coerce.date().optional(),
+  dob: z
+    .coerce
+    .date()
+    .optional()
+    .refine((date) => !date || !Number.isNaN(date.getTime()), {
+      message: "Invalid date",
+    })
+    .refine((date) => !date || date <= new Date(), {
+      message: "Date must be in the past",
+    }),
   phoneNumber: z.string().min(10).max(10).startsWith("0").optional(),
   roles: z.array(z.string()).min(1).max(3).default(["user"]).optional(),
 });

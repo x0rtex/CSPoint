@@ -12,11 +12,10 @@ describe("User API", () => {
   let userId: string;
 
   const newUser = {
-    name: "Una",
-    phoneNumber: "0871234567",
-    email: "john.doe@mymail.ie",
-    dob: "2001/01/12",
-    silly: "this is not just silly but dangerous",
+    username: "Una",
+    email: `john.doe+${Date.now()}@mymail.ie`,
+    password: "UserUserUser123!",
+    dob: "2001-01-12",
   };
 
   test("should create a user and return Location header", async () => {

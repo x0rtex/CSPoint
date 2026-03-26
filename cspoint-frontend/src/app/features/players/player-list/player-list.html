@@ -1,16 +1,16 @@
-<h2 class="text-2xl font-bold">Player List</h2>
+<h2 class="text-2xl font-bold text-shadow">Player List</h2>
 <mat-form-field appearance="fill">
   <mat-label>Search players</mat-label>
   <input matInput type="text" (input)="onFilterChange($any($event.target).value)" />
   <mat-icon matPrefix>search</mat-icon>
 </mat-form-field>
-@if (filteredPlayers$ | async; as players) { @if (isAuthenticated$ | async) {
-<button matButton="outlined" (click)="addPlayer()">
+@if (filteredPlayers$ | async; as players) { @if (isAuthenticatedSignal()) {
+<button matButton="filled" (click)="addPlayer()">
   <mat-icon>add</mat-icon>
   Add Player
 </button>
 } @if (players.length > 0) {
-<div class="overflow-x-auto my-4">
+<div class="overflow-x-auto my-4 rounded">
   <table mat-table [dataSource]="players">
     <ng-container matColumnDef="image">
       <th mat-header-cell *matHeaderCellDef>Image</th>
@@ -62,7 +62,7 @@
         </button>
 
         <!-- Set Favorite Player -->
-        @if (isAuthenticated$ | async) {
+        @if (isAuthenticatedSignal()) {
         <button matButton="outlined" (click)="setFavouritePlayer(player._id!)">
           <mat-icon>favorite</mat-icon>
           Set Favourite
@@ -76,6 +76,7 @@
   </table>
 </div>
 <mat-paginator
+  class="rounded"
   [length]="totalPlayers"
   [pageSize]="pageSize"
   [pageSizeOptions]="[5, 10, 20]"
@@ -84,5 +85,9 @@
 } @else {
 <p>No players found.</p>
 } } @else {
+@if (isLoading()) {
 <mat-spinner></mat-spinner>
+} @else if (errorMessage()) {
+<p>{{ errorMessage() }}</p>
+}
 }

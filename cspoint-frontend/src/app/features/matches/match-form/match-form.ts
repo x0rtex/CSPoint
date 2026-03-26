@@ -19,8 +19,8 @@ import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialo
 import { Match } from '../match.interface';
 import { MatchesService } from '../matches.service';
 import { MatSelectModule } from '@angular/material/select';
-import { TeamService } from '../../teams/team-create/teams/team.service';
-import { Team } from '../../teams/team-create/teams/team.interface';
+import { TeamService } from '../../teams/team.service';
+import { Team } from '../../teams/team.interface';
 import { BehaviorSubject } from 'rxjs';
 
 @Component({

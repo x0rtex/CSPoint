@@ -27,7 +27,7 @@
       </a>
 
       <!-- Login / Register -->
-      @if (!(isAuthenticated$ | async)) {
+      @if (!isAuthenticatedSignal()) {
       <mat-divider></mat-divider>
       <a mat-list-item routerLink="/login" routerLinkActive="active">
         <mat-icon matListItemIcon>login</mat-icon>
@@ -40,14 +40,14 @@
       }
 
       <!-- Profile / Logout -->
-      @if (isAuthenticated$ | async) {
+      @if (isAuthenticatedSignal()) {
       <mat-divider></mat-divider>
       <a mat-list-item routerLink="/profile" routerLinkActive="active">
         <mat-icon matListItemIcon>person</mat-icon>
         <span matListItemTitle>Profile</span>
       </a>
-      @if (currentUser$ | async; as user) {
-      @if (user.roles && user.roles.includes('admin')) {
+      @if (currentUserSignal(); as user) {
+      @if ((user?.roles ?? []).includes('admin')) {
       <a mat-list-item routerLink="/admin" routerLinkActive="active">
         <mat-icon matListItemIcon>admin_panel_settings</mat-icon>
         <span matListItemTitle>Admin</span>

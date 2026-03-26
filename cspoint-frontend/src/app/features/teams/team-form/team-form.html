@@ -121,19 +121,19 @@
 </mat-card>
 
 <!-- Preview -->
-<h2 class="text-xl font-semibold">Preview</h2>
-<mat-card class="team-card" appearance="outlined">
-  <mat-card-header>
-    <div mat-card-avatar class="team-logo">
-      <img [src]="teamForm.get('logoUrl')?.value" [alt]="" />
-    </div>
-    <mat-card-title>{{teamForm.get('name')?.value}}</mat-card-title>
-    <mat-card-subtitle># {{teamForm.get('ranking')?.value}}</mat-card-subtitle>
-  </mat-card-header>
+<h2 class="text-xl font-semibold text-shadow">Preview</h2>
+  <mat-card class="team-card" appearance="outlined">
+    <mat-card-header>
+      <div mat-card-avatar class="team-logo">
+        <img [src]="teamForm.get('logoUrl')?.value" [alt]="" />
+      </div>
+      <mat-card-title>{{teamForm.get('name')?.value}}</mat-card-title>
+      <mat-card-subtitle># {{teamForm.get('ranking')?.value}}</mat-card-subtitle>
+    </mat-card-header>
 
-  <mat-card-content>
-    <p><strong>Country:</strong> {{teamForm.get('country')?.value}}</p>
-    <p><strong>Players:</strong> {{ teamForm.get('playerIds')?.value?.join(', ') }}</p>
-    <p><strong>Last Updated:</strong> {{ currentDate | date }}</p>
-  </mat-card-content>
-</mat-card>
+    <mat-card-content>
+      <p><strong>Country:</strong> {{teamForm.get('country')?.value}}</p>
+      <p><strong>Players:</strong> {{ teamForm.get('playerIds')?.value?.join(', ') }}</p>
+      <p><strong>Last Updated:</strong> {{ currentDate | date }}</p>
+    </mat-card-content>
+  </mat-card>

@@ -1,5 +1,5 @@
-import { Component, inject } from '@angular/core';
-import { BehaviorSubject, forkJoin, map, combineLatest } from 'rxjs';
+import { Component, inject, signal } from '@angular/core';
+import { BehaviorSubject, forkJoin, map, combineLatest, finalize } from 'rxjs';
 import { Player } from '../player.interface';
 import { PlayerService } from '../player.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -12,7 +12,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { TeamService } from '../../teams/team-create/teams/team.service';
+import { TeamService } from '../../teams/team.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { UsersService } from '../../users/users.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -44,6 +44,9 @@ export class PlayerListComponent {
 
   players$ = new BehaviorSubject<(Player & { team?: any })[]>([]);
   playerFilter$ = new BehaviorSubject<string>('');
+  isLoading = signal<boolean>(false);
+  errorMessage = signal<string | null>(null);
+  isAuthenticatedSignal = this.authService.isAuthenticatedSignal;
   filteredPlayers$ = combineLatest([this.players$, this.playerFilter$]).pipe(
     map(([players, filter]) => {
       const value = filter.trim().toLowerCase();
@@ -68,6 +71,8 @@ export class PlayerListComponent {
   }
 
   loadPlayers(): void {
+    this.isLoading.set(true);
+    this.errorMessage.set(null);
     forkJoin({
       players: this.playerService.getPlayers(this.pageIndex + 1, this.pageSize),
       teams: this.teamService.getTeams(1, 1000),
@@ -81,8 +86,14 @@ export class PlayerListComponent {
             team: player.teamId ? teamMap.get(player.teamId) : undefined,
           }));
         }),
+        finalize(() => this.isLoading.set(false)),
       )
-      .subscribe((data) => this.players$.next(data));
+      .subscribe({
+        next: (data) => this.players$.next(data),
+        error: (err: Error) => {
+          this.errorMessage.set(err.message || 'Failed to load players');
+        },
+      });
   }
 
   onPageChange(event: PageEvent): void {

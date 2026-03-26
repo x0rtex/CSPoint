@@ -9,12 +9,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
-import { ConfirmDialogComponent } from '../../../../../shared/components/confirm-dialog/confirm-dialog';
+import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog';
 import { Team } from '../team.interface';
 import { TeamService } from '../team.service';
 import { MatSelectModule } from '@angular/material/select';
-import { PlayerService } from '../../../../players/player.service';
-import { Player } from '../../../../players/player.interface';
+import { PlayerService } from '../../players/player.service';
+import { Player } from '../../players/player.interface';
 import { BehaviorSubject } from 'rxjs';
 
 @Component({

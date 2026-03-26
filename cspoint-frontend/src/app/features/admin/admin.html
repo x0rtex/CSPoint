@@ -2,7 +2,7 @@
 
 @if (users$ | async; as users) {
   @if (users.length > 0) {
-    <div class="overflow-x-auto my-4">
+    <div class="overflow-x-auto my-4 rounded">
       <table mat-table [dataSource]="users">
 
         <!-- User Username -->

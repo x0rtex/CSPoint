@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, signal, WritableSignal } from '@angular/core';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { User } from '../../features/users/user.interface';
 import { environment } from '../../environments/environment';
@@ -15,12 +15,19 @@ interface LoginResponse {
 export class AuthService {
   readonly currentUser$: BehaviorSubject<User | null>;
   readonly isAuthenticated$: BehaviorSubject<boolean>;
+  readonly currentUserSignal: WritableSignal<User | null>;
+  readonly isAuthenticatedSignal: WritableSignal<boolean>;
+  readonly tokenSignal: WritableSignal<string | null>;
 
   private http = inject(HttpClient);
   private authenticateTimeout?: ReturnType<typeof setTimeout>;
 
   constructor() {
-    this.currentUser$ = new BehaviorSubject<User | null>(this.getUserFromStorage());
+    const storedUser = this.getUserFromStorage();
+    this.currentUser$ = new BehaviorSubject<User | null>(storedUser);
+    this.currentUserSignal = signal<User | null>(storedUser);
+    this.tokenSignal = signal<string | null>(localStorage.getItem('token'));
+    this.isAuthenticatedSignal = signal<boolean>(false);
 
     const token: string = localStorage.getItem('token') || '';
 
@@ -30,17 +37,24 @@ export class AuthService {
         const expires = payload.exp * 1000;
         if (expires > Date.now()) {
           this.isAuthenticated$ = new BehaviorSubject<boolean>(true);
+          this.isAuthenticatedSignal.set(true);
           this.startAuthenticateTimer(expires);
         } else {
           this.isAuthenticated$ = new BehaviorSubject<boolean>(false);
+          this.isAuthenticatedSignal.set(false);
           this.clearStorage();
+          this.tokenSignal.set(null);
         }
       } else {
         this.isAuthenticated$ = new BehaviorSubject<boolean>(false);
+        this.isAuthenticatedSignal.set(false);
         this.clearStorage();
+        this.tokenSignal.set(null);
       }
     } else {
       this.isAuthenticated$ = new BehaviorSubject<boolean>(false);
+      this.isAuthenticatedSignal.set(false);
+      this.tokenSignal.set(null);
     }
   }
 
@@ -92,6 +106,9 @@ export class AuthService {
 
     this.currentUser$.next(user);
     this.isAuthenticated$.next(true);
+    this.currentUserSignal.set(user);
+    this.isAuthenticatedSignal.set(true);
+    this.tokenSignal.set(token);
 
     const payload = this.decodeToken(token);
     if (payload) {
@@ -104,6 +121,9 @@ export class AuthService {
     this.clearStorage();
     this.currentUser$.next(null);
     this.isAuthenticated$.next(false);
+    this.currentUserSignal.set(null);
+    this.isAuthenticatedSignal.set(false);
+    this.tokenSignal.set(null);
 
     if (this.authenticateTimeout) {
       clearTimeout(this.authenticateTimeout);

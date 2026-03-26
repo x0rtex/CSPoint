@@ -12,6 +12,7 @@ import { Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 import { AuthService } from '../../../core/services/auth.service';
 import { MatDividerModule } from '@angular/material/divider';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-navigation',
@@ -41,8 +42,8 @@ export class NavigationComponent {
     shareReplay(),
   );
 
-  isAuthenticated$ = this.authService.isAuthenticated$;
-  currentUser$ = this.authService.currentUser$;
+  isAuthenticatedSignal = this.authService.isAuthenticatedSignal;
+  currentUserSignal = this.authService.currentUserSignal;
 
   isDarkMode: boolean = false;
 

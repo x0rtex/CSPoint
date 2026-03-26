@@ -1,17 +1,27 @@
 .sidenav-container {
   height: 100%;
+  background: transparent;
 }
 
 .sidenav {
   width: 200px;
+  border-radius: 0px;
+  background: var(--app-backdrop-strong);
 }
 
 .sidenav .mat-toolbar {
   background: inherit;
+  background: var(--app-backdrop);
+}
+
+.mat-sidenav-content {
+  background: var(--app-backdrop);
 }
 
 .mat-toolbar.mat-primary {
   position: sticky;
   top: 0;
   z-index: 1;
+  background: var(--app-backdrop);
+  backdrop-filter: blur(6px);
 }

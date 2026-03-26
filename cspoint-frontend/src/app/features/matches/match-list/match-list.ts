@@ -1,6 +1,6 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { BehaviorSubject, forkJoin, map, combineLatest } from 'rxjs';
+import { BehaviorSubject, forkJoin, map, combineLatest, finalize } from 'rxjs';
 import { Match } from '../match.interface';
 import { MatchesService } from '../matches.service';
 import { AsyncPipe, DatePipe } from '@angular/common';
@@ -12,8 +12,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { TeamService } from '../../teams/team-create/teams/team.service';
-import { Team } from '../../teams/team-create/teams/team.interface';
+import { TeamService } from '../../teams/team.service';
+import { Team } from '../../teams/team.interface';
 import { AuthService } from '../../../core/services/auth.service';
 
 interface MatchWithTeams extends Match {
@@ -47,6 +47,9 @@ export class MatchListComponent {
 
   matches$ = new BehaviorSubject<MatchWithTeams[]>([]);
   matchFilter$ = new BehaviorSubject<string>('');
+  isLoading = signal<boolean>(false);
+  errorMessage = signal<string | null>(null);
+  isAuthenticatedSignal = this.authService.isAuthenticatedSignal;
   filteredMatches$ = combineLatest([this.matches$, this.matchFilter$]).pipe(
     map(([matches, filter]) => {
       const value = filter.trim().toLowerCase();
@@ -71,6 +74,8 @@ export class MatchListComponent {
   }
 
   loadMatches(): void {
+    this.isLoading.set(true);
+    this.errorMessage.set(null);
     forkJoin({
       matches: this.matchesService.getMatches(this.pageIndex + 1, this.pageSize),
       teams: this.teamService.getTeams(1, 1000),
@@ -85,8 +90,14 @@ export class MatchListComponent {
             team2: teamMap.get(match.team2Id),
           }));
         }),
+        finalize(() => this.isLoading.set(false)),
       )
-      .subscribe((data) => this.matches$.next(data));
+      .subscribe({
+        next: (data) => this.matches$.next(data),
+        error: (err: Error) => {
+          this.errorMessage.set(err.message || 'Failed to load matches');
+        },
+      });
   }
 
   onPageChange(event: PageEvent): void {

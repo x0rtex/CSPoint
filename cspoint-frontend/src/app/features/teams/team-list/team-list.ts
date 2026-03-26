@@ -1,7 +1,7 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { TeamService } from '../team.service';
 import { Router, RouterLink } from '@angular/router';
-import { BehaviorSubject, combineLatest, map } from 'rxjs';
+import { BehaviorSubject, combineLatest, map, finalize } from 'rxjs';
 import { Team } from '../team.interface';
 import { AsyncPipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
@@ -12,8 +12,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { AuthService } from '../../../../../core/services/auth.service';
-import { UsersService } from '../../../../users/users.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { UsersService } from '../../users/users.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
@@ -42,6 +42,9 @@ export class TeamListComponent {
 
   teams$ = new BehaviorSubject<Team[]>([]);
   teamFilter$ = new BehaviorSubject<string>('');
+  isLoading = signal<boolean>(false);
+  errorMessage = signal<string | null>(null);
+  isAuthenticatedSignal = this.authService.isAuthenticatedSignal;
   filteredTeams$ = combineLatest([this.teams$, this.teamFilter$]).pipe(
     map(([teams, filter]) => {
       const value = filter.trim().toLowerCase();
@@ -88,10 +91,20 @@ export class TeamListComponent {
   }
 
   loadTeams(): void {
-    this.teamService.getTeams(this.pageIndex + 1, this.pageSize).subscribe((res) => {
-      this.totalTeams = res.total;
-      this.teams$.next(res.data);
-    });
+    this.isLoading.set(true);
+    this.errorMessage.set(null);
+    this.teamService
+      .getTeams(this.pageIndex + 1, this.pageSize)
+      .pipe(finalize(() => this.isLoading.set(false)))
+      .subscribe({
+        next: (res) => {
+          this.totalTeams = res.total;
+          this.teams$.next(res.data);
+        },
+        error: (err: Error) => {
+          this.errorMessage.set(err.message || 'Failed to load teams');
+        },
+      });
   }
 
   onPageChange(event: PageEvent): void {

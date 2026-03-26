@@ -13,8 +13,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog';
 import { DatePipe } from '@angular/common';
 import { MatSelectModule } from '@angular/material/select';
-import { TeamService } from '../../teams/team-create/teams/team.service';
-import { Team } from '../../teams/team-create/teams/team.interface';
+import { TeamService } from '../../teams/team.service';
+import { Team } from '../../teams/team.interface';
 import { BehaviorSubject } from 'rxjs';
 
 @Component({

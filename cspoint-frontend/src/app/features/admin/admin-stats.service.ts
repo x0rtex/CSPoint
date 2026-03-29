@@ -8,6 +8,7 @@ export interface AdminStats {
   players: number;
   teams: number;
   matches: number;
+  playersByCountry?: { country: string; count: number }[];
 }
 
 @Injectable({

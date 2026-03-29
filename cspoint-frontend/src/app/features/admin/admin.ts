@@ -38,6 +38,7 @@ export class AdminComponent implements OnInit {
   displayedColumns: string[] = ['username', 'email', 'role', 'actions'];
   roleSelections: Record<string, string> = {};
   stats$ = new BehaviorSubject<AdminStats | null>(null);
+  countryChart: { label: string; count: number; percent: number }[] = [];
 
   ngOnInit(): void {
     this.loadUsers();
@@ -50,9 +51,21 @@ export class AdminComponent implements OnInit {
 
   loadStats(): void {
     this.statsService.getStats().subscribe({
-      next: (stats) => this.stats$.next(stats),
+      next: (stats) => {
+        this.stats$.next(stats);
+        this.countryChart = this.buildCountryChart(stats.playersByCountry || []);
+      },
       error: () => this.stats$.next(null),
     });
+  }
+
+  buildCountryChart(items: { country: string; count: number }[]) {
+    const total = items.reduce((sum, item) => sum + item.count, 0) || 1;
+    return items.map((item) => ({
+      label: item.country,
+      count: item.count,
+      percent: Math.round((item.count / total) * 100),
+    }));
   }
 
   getSelectedRole(user: User): string {

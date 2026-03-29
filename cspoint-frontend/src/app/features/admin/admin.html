@@ -4,28 +4,45 @@
 
 <section class="stats-section">
   @if (stats$ | async; as stats) {
-  <div class="stats-grid">
-    <div class="stat-card">
-      <span class="stat-label">Users</span>
-      <span class="stat-value">{{ stats.users }}</span>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span class="stat-label">Users</span>
+        <span class="stat-value">{{ stats.users }}</span>
+      </div>
+      <div class="stat-card">
+        <span>Players</span>
+        <span class="stat-value">{{ stats.players }}</span>
+      </div>
+      <div class="stat-card">
+        <span>Teams</span>
+        <span class="stat-value">{{ stats.teams }}</span>
+      </div>
+      <div class="stat-card">
+        <span>Matches</span>
+        <span class="stat-value">{{ stats.matches }}</span>
+      </div>
     </div>
-    <div class="stat-card">
-      <span class="stat-label">Players</span>
-      <span class="stat-value">{{ stats.players }}</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-label">Teams</span>
-      <span class="stat-value">{{ stats.teams }}</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-label">Matches</span>
-      <span class="stat-value">{{ stats.matches }}</span>
-    </div>
-  </div>
   } @else {
-  <p>Loading stats...</p>
+    <p>Loading stats...</p>
   }
 </section>
+
+@if (countryChart.length > 0) {
+  <section class="chart-section">
+    <h3 class="text-xl font-semibold">Players by Country</h3>
+    <div class="chart">
+      @for (slice of countryChart; track slice.label) {
+        <div class="chart-row">
+          <span>{{ slice.label }}</span>
+          <div class="chart-bar">
+            <div class="chart-fill" [style.width.%]="slice.percent"></div>
+          </div>
+          <span>{{ slice.count }} ({{ slice.percent }}%)</span>
+        </div>
+      }
+    </div>
+  </section>
+}
 
 <h3 class="text-xl font-semibold">User Management</h3>
 

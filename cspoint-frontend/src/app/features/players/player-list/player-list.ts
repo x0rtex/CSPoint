@@ -12,6 +12,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
 import { TeamService } from '../../teams/team.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { UsersService } from '../../users/users.service';
@@ -30,6 +31,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
     MatDividerModule,
     MatButtonModule,
     MatIconModule,
+    MatSelectModule,
   ],
   templateUrl: './player-list.html',
   styleUrl: './player-list.scss',
@@ -62,6 +64,9 @@ export class PlayerListComponent {
   pageSize = 10;
   pageIndex = 0;
   displayedColumns: string[] = ['image', 'nickname', 'name', 'country', 'rating', 'team', 'action'];
+
+  comparePlayerAId = signal<string | null>(null);
+  comparePlayerBId = signal<string | null>(null);
 
   isAuthenticated$ = this.authService.isAuthenticated$;
   currentUser$ = this.authService.currentUser$;
@@ -108,6 +113,24 @@ export class PlayerListComponent {
 
   onFilterChange(value: string): void {
     this.playerFilter$.next(value);
+  }
+
+  comparePlayerA(): Player | undefined {
+    return this.players$.value.find((player) => player._id === this.comparePlayerAId());
+  }
+
+  comparePlayerB(): Player | undefined {
+    return this.players$.value.find((player) => player._id === this.comparePlayerBId());
+  }
+
+  ratingDiff(): number | null {
+    const playerA = this.comparePlayerA();
+    const playerB = this.comparePlayerB();
+    if (!playerA || !playerB) return null;
+    const ratingA = Number(playerA.rating);
+    const ratingB = Number(playerB.rating);
+    if (Number.isNaN(ratingA) || Number.isNaN(ratingB)) return null;
+    return parseFloat((ratingA - ratingB).toFixed(2));
   }
 
   setFavouritePlayer(playerId: string): void {

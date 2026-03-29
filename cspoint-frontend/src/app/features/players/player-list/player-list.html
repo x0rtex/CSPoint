@@ -4,6 +4,57 @@
   <input matInput type="text" (input)="onFilterChange($any($event.target).value)" />
   <mat-icon matPrefix>search</mat-icon>
 </mat-form-field>
+
+<section class="compare-section">
+  <h3 class="text-xl font-semibold">Player Comparator</h3>
+  <div class="compare-grid">
+    <mat-form-field appearance="fill">
+      <mat-label>Player A</mat-label>
+      <mat-select [value]="comparePlayerAId()" (selectionChange)="comparePlayerAId.set($event.value)">
+        @for (player of (players$ | async) || []; track player._id) {
+        <mat-option [value]="player._id">
+          {{ player.nickname }} ({{ player.name }})
+        </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+      <mat-label>Player B</mat-label>
+      <mat-select [value]="comparePlayerBId()" (selectionChange)="comparePlayerBId.set($event.value)">
+        @for (player of (players$ | async) || []; track player._id) {
+        <mat-option [value]="player._id">
+          {{ player.nickname }} ({{ player.name }})
+        </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  @if (comparePlayerA() && comparePlayerB()) {
+  <div class="compare-card">
+    <div class="compare-side">
+      <img [src]="comparePlayerA()?.photoUrl" class="compare-avatar" alt="" />
+      <span>{{ comparePlayerA()?.nickname }}</span>
+      <span>{{ comparePlayerA()?.rating }} rating</span>
+    </div>
+    <div class="compare-middle">
+      <div class="compare-diff">
+        @if (ratingDiff() !== null) {
+        {{ ratingDiff()! > 0 ? '+' : '' }}{{ ratingDiff() }}
+        } @else {
+        --
+        }
+      </div>
+      <div class="compare-vs">VS</div>
+    </div>
+    <div class="compare-side">
+      <img [src]="comparePlayerB()?.photoUrl" class="compare-avatar" alt="" />
+      <span>{{ comparePlayerB()?.nickname }}</span>
+      <span>{{ comparePlayerB()?.rating }} rating</span>
+    </div>
+  </div>
+  }
+</section>
 @if (filteredPlayers$ | async; as players) { @if (isAuthenticatedSignal()) {
 <button matButton="filled" (click)="addPlayer()">
   <mat-icon>add</mat-icon>

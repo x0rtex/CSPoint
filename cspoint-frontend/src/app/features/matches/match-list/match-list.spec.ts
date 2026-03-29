@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { MatchListComponent } from './match-list';
+import { RouterTestingModule } from '@angular/router/testing';
 
 describe('MatchListComponent', () => {
   let component: MatchListComponent;
@@ -8,7 +8,7 @@ describe('MatchListComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MatchListComponent]
+      imports: [MatchListComponent, RouterTestingModule]
     })
     .compileComponents();
 

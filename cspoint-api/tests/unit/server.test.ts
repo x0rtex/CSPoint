@@ -9,8 +9,8 @@ beforeAll(async () => {
 
 describe("Basic server running and answering ping", () => {
   test("Testing the ping", async () => {
-    const res = await request(app).get("/ping");
-    expect(res.body).toEqual({ message: "Hello from Alekss !!" });
+    const res = await request(app).get("/health");
+    expect(res.body).toEqual({ status: "ok" });
   });
 });
 

@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { TeamListComponent } from './team-list';
+import { RouterTestingModule } from '@angular/router/testing';
 
 describe('TeamListComponent', () => {
   let component: TeamListComponent;
@@ -8,7 +8,7 @@ describe('TeamListComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TeamListComponent]
+      imports: [TeamListComponent, RouterTestingModule]
     })
     .compileComponents();
 
